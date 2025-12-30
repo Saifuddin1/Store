@@ -16,9 +16,10 @@ class Config:
 
     # 🔀 DATABASE SWITCH (Postgres > MySQL fallback)
     if os.getenv("DATABASE_URL"):
-        # Render / Production (PostgreSQL)
-        SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL").replace(
-            "postgres://", "postgresql://", 1
+        
+        SQLALCHEMY_DATABASE_URI = os.getenv(
+            "DATABASE_URL",
+            "mysql+pymysql://root:password@localhost/store"
         )
     else:
         # Local MySQL
