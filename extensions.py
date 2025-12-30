@@ -3,14 +3,7 @@ import traceback
 import logging
 import pytz
 from datetime import datetime
-import redis
 
-redis_client = redis.StrictRedis(
-    host='localhost',
-    port=6379,
-    db=0,
-    decode_responses=True
-)
 
 
 class ISTFormatter(logging.Formatter):
@@ -55,8 +48,3 @@ def handle_exception(e, redirect_url, message="Something went wrong"):
     logger.info(f"Exception occurred: {e}")
     flash(message, 'danger')
     return redirect(redirect_url)
-
-
-min_type = (
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
