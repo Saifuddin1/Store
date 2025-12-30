@@ -1,0 +1,49 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}Stock Notification Requests{% endblock %}
+
+{% block admin_content %}
+
+<h2 class="mb-4">🔔 Stock Notification Requests</h2>
+
+{% if rows %}
+<table class="table table-bordered table-hover align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Product</th>
+      <th>Current Stock</th>
+      <th>Waiting Users</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.product_name }}</td>
+      <td>
+        {% if r.stock_quantity > 0 %}
+          <span class="badge bg-success">{{ r.stock_quantity }}</span>
+        {% else %}
+          <span class="badge bg-danger">Out of Stock</span>
+        {% endif %}
+      </td>
+      <td>
+        <strong>{{ r.waiting_count }}</strong>
+      </td>
+      <td>
+        <a href="{{ url_for('admin.stock_notify_detail', product_id=r.product_id) }}"
+           class="btn btn-sm btn-outline-primary">
+          View Users
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <div class="alert alert-info">
+    No stock notification requests yet.
+  </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}Product Images | Admin{% endblock %}
+
+{% block admin_content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="mb-0">Images for {{ product.name }}</h3>
+
+  <a href="{{ url_for('admin.products') }}"
+     class="btn btn-outline-secondary">
+    ← Back to Products
+  </a>
+</div>
+
+<!-- Upload Image -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+
+    <h5 class="mb-3">Upload New Image</h5>
+
+    <form method="POST" enctype="multipart/form-data" class="row g-3">
+      <div class="col-md-8">
+        <input
+          type="file"
+          name="image"
+          class="form-control"
+          accept="image/*"
+          required
+        >
+      </div>
+
+      <div class="col-md-4 d-grid">
+        <button type="submit" class="btn btn-primary">
+          Upload Image
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Uploaded Images -->
+<div class="card shadow-sm">
+  <div class="card-body">
+
+    <h5 class="mb-3">Uploaded Images</h5>
+
+    {% if images %}
+      <div class="row">
+
+        {% for img in images %}
+        <div class="col-md-3 col-sm-4 col-6 mb-4">
+
+          <div class="card h-100">
+            <img
+              src="{{ url_for('static', filename=img.image_path) }}"
+              class="card-img-top"
+              style="height: 180px; object-fit: cover;"
+            >
+
+            <div class="card-body text-center p-2">
+
+              {% if img.is_primary %}
+                <span class="badge bg-success mb-2 d-block">
+                  Primary Image
+                </span>
+              {% else %}
+                <form method="POST"
+                      action="{{ url_for('admin.set_primary_image', image_id=img.id) }}"
+                      class="mb-2">
+                  <button type="submit"
+                          class="btn btn-sm btn-outline-primary w-100">
+                    Set as Primary
+                  </button>
+                </form>
+              {% endif %}
+
+              <form method="POST"
+                    action="{{ url_for('admin.delete_product_image', image_id=img.id) }}"
+                    onsubmit="return confirm('Delete this image?');">
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger w-100">
+                  Delete
+                </button>
+              </form>
+
+            </div>
+          </div>
+
+        </div>
+        {% endfor %}
+
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">No images uploaded for this product.</p>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

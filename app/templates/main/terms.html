@@ -1,0 +1,57 @@
+{% extends "layout/customer_base.html" %}
+{% block title %}Terms & Conditions | MyStore{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- Page Header -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">Terms & Conditions</h2>
+    <p class="text-muted">
+      Please read these terms carefully before using our website.
+    </p>
+  </div>
+
+  {% if terms and terms.sections %}
+
+    <div class="terms-wrapper">
+
+      {% for s in terms.sections %}
+        <div class="card mb-4 shadow-sm border-0">
+          <div class="card-body">
+
+            <h5 class="fw-semibold mb-3">
+              {{ loop.index }}. {{ s.heading }}
+            </h5>
+
+            <div class="terms-content">
+              {{ s.content | safe }}
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+
+    <!-- Last Updated -->
+    <div class="text-center mt-4">
+      <small class="text-muted">
+        Last updated on {{ terms.updated_at.strftime("%d %B %Y") }}
+      </small>
+    </div>
+
+    <!-- Trust Footer -->
+    <div class="alert alert-light mt-5 border text-center">
+      <small class="text-muted">
+        By continuing to use this website, you agree to comply with these
+        terms and conditions.
+      </small>
+    </div>
+
+  {% else %}
+    <p class="text-center">Terms & Conditions will be updated soon.</p>
+  {% endif %}
+
+</div>
+{% endblock %}

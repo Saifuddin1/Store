@@ -1,0 +1,116 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}Manage Products | Admin{% endblock %}
+
+{% block admin_content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Products</h2>
+
+  <a href="{{ url_for('admin.add_product') }}"
+     class="btn btn-primary">
+    + Add Product
+  </a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+
+    <table class="table table-striped table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Final Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th style="width: 260px;">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>
+            <strong>{{ p.name }}</strong>
+          </td>
+
+          <td>{{ p.category.name }}</td>
+
+          <td>{{ p.price }}</td>
+
+          <td>
+            {% if p.final_price < p.price %}
+              <span class="text-success fw-semibold">
+                {{ p.final_price }}
+              </span>
+            {% else %}
+              {{ p.final_price }}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if p.stock_quantity > 0 %}
+              <span class="badge bg-success">
+                {{ p.stock_quantity }}
+              </span>
+            {% else %}
+              <span class="badge bg-danger">
+                Out
+              </span>
+            {% endif %}
+          </td>
+
+          <td>
+            {% if p.is_active %}
+              <span class="badge bg-success">Active</span>
+            {% else %}
+              <span class="badge bg-secondary">Inactive</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <a href="{{ url_for('admin.edit_product', product_id=p.id) }}"
+               class="btn btn-sm btn-outline-primary me-1">
+              Edit
+            </a>
+
+            <a href="{{ url_for('admin.product_images', product_id=p.id) }}"
+               class="btn btn-sm btn-outline-secondary me-1">
+              Images
+            </a>
+
+            <form method="POST"
+                  action="{{ url_for('admin.delete_product', product_id=p.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('Delete this product?');">
+              <button type="submit"
+                      class="btn btn-sm btn-outline-danger">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">
+            No products found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+  </div>
+</div>
+
+<div class="mt-4">
+  <a href="/admin" class="btn btn-link">
+    ← Back to Dashboard
+  </a>
+</div>
+
+{% endblock %}

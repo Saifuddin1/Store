@@ -1,0 +1,86 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}About Us | MyStore{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO SECTION ================= -->
+<div class="about-hero mb-5">
+  <div class="overlay"></div>
+
+  <div class="container position-relative h-100">
+    <div class="row h-100 align-items-center">
+      <div class="col-md-8 text-white">
+        <h1 class="display-5 fw-bold mb-3">
+          {{about.hero_title}}
+        </h1>
+        <p class="lead">
+          {{about.hero_subtitle}}
+
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container mb-5">
+
+  <!-- WHO WE ARE -->
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <h3 class="mb-3">{{ about.who_title }}</h3>
+      <p class="text-muted">
+        {{ about.who_content }}
+      </p>
+    </div>
+
+    <div class="col-md-6">
+      <h3 class="mb-3">{{ about.mission_title }}</h3>
+      <p class="text-muted">
+        {{ about.mission_content }}
+      </p>
+    </div>
+  </div>
+
+  <!-- WHY CHOOSE US -->
+  {% if about.why_blocks %}
+    <h3 class="mb-4 text-center">Why Choose Us</h3>
+
+    <div class="row text-center">
+      {% for card in about.why_blocks %}
+        <div class="col-md-3 col-sm-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h1>{{ card.icon }}</h1>
+              <h6 class="fw-bold">{{ card.title }}</h6>
+              <p class="text-muted small">
+                {{ card.text }}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+
+<!-- ================= STYLES ================= -->
+<style>
+.about-hero {
+  position: relative;
+  height: 320px;
+  background-image: url("{{ about.hero_image }}");
+  background-size: cover;
+  background-position: center;
+}
+
+.about-hero .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+}
+</style>
+
+{% endblock %}

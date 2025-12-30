@@ -1,0 +1,108 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}Add Address | My Store{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-6 col-md-8">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <h3 class="mb-4 text-center">Add Delivery Address</h3>
+
+        <form method="POST">
+
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text"
+                   name="full_name"
+                   class="form-control"
+                   placeholder="Enter full name"
+                   required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text"
+                   name="phone"
+                   class="form-control"
+                   placeholder="10-digit mobile number"
+                   required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Address Line 1</label>
+            <input type="text"
+                   name="address_line1"
+                   class="form-control"
+                   placeholder="House number, street, area"
+                   required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Address Line 2</label>
+            <input type="text"
+                   name="address_line2"
+                   class="form-control"
+                   placeholder="Apartment, landmark (optional)">
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">City</label>
+              <input type="text"
+                     name="city"
+                     class="form-control"
+                     required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">State</label>
+              <input type="text"
+                     name="state"
+                     class="form-control"
+                     required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Postal Code</label>
+              <input type="text"
+                     name="postal_code"
+                     class="form-control"
+                     required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Country</label>
+              <input type="text"
+                     name="country"
+                     class="form-control"
+                     value="India">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('main.checkout') }}"
+               class="btn btn-outline-secondary">
+              ← Back to Checkout
+            </a>
+
+            <button type="submit"
+                    class="btn btn-primary">
+              Save Address
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

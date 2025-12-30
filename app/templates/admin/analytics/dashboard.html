@@ -1,0 +1,231 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}Analytics | Admin{% endblock %}
+
+{% block admin_content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">📊 Store Analytics</h2>
+    <small class="text-muted">Live insights (last 30 days + totals)</small>
+  </div>
+  <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+    ← Back to Admin
+  </a>
+</div>
+
+<!-- KPI CARDS -->
+<div class="row g-3 mb-4">
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Total Orders</div>
+        <div class="fs-4 fw-bold" id="kpi-total-orders">—</div>
+        <div class="small text-muted">Last 30 days: <span id="kpi-orders-30">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Total Revenue</div>
+        <div class="fs-4 fw-bold" id="kpi-total-revenue">—</div>
+        <div class="small text-muted">Last 30 days: <span id="kpi-revenue-30">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Customers</div>
+        <div class="fs-4 fw-bold" id="kpi-customers">—</div>
+        <div class="small text-muted">Products: <span id="kpi-products">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Catalog Health</div>
+        <div class="fs-6 fw-bold">Low Stock (≤5): <span id="kpi-lowstock">—</span></div>
+        <div class="small text-muted">Categories: <span id="kpi-categories">—</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row g-4">
+
+  <!-- Orders status (doughnut) -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="mb-3">Orders by Status</h5>
+        <canvas id="chartStatus" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders timeseries -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="mb-3">Orders (Last 30 Days)</h5>
+        <canvas id="chartOrders" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue timeseries -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="mb-3">Revenue (Last 30 Days)</h5>
+        <canvas id="chartRevenue" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top products -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="mb-3">Top Products (Qty)</h5>
+        <canvas id="chartTopProducts" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  function moneyINR(x){
+    try {
+      return "₹" + Number(x || 0).toFixed(2);
+    } catch(e) {
+      return "₹0.00";
+    }
+  }
+
+  async function getJSON(url){
+    const r = await fetch(url, {headers: {"X-Requested-With":"XMLHttpRequest"}});
+    return await r.json();
+  }
+
+  let chartStatus, chartOrders, chartRevenue, chartTopProducts;
+
+  async function loadKPIs(){
+    const data = await getJSON("{{ url_for('admin.analytics_summary') }}");
+
+    document.getElementById("kpi-total-orders").textContent = data.total_orders;
+    document.getElementById("kpi-orders-30").textContent = data.orders_30;
+
+    document.getElementById("kpi-total-revenue").textContent = moneyINR(data.total_revenue);
+    document.getElementById("kpi-revenue-30").textContent = moneyINR(data.revenue_30);
+
+    document.getElementById("kpi-customers").textContent = data.total_customers;
+    document.getElementById("kpi-products").textContent = data.total_products;
+
+    document.getElementById("kpi-lowstock").textContent = data.low_stock;
+    document.getElementById("kpi-categories").textContent = data.total_categories;
+  }
+
+  async function loadCharts(){
+
+    // 1) Status doughnut
+    const s = await getJSON("{{ url_for('admin.analytics_orders_by_status') }}");
+    const ctxStatus = document.getElementById("chartStatus");
+    if (chartStatus) chartStatus.destroy();
+    chartStatus = new Chart(ctxStatus, {
+      type: "doughnut",
+      data: {
+        labels: s.labels,
+        datasets: [{ data: s.values }]
+      },
+      options: {
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+
+    // 2) Orders line
+    const o = await getJSON("{{ url_for('admin.analytics_orders_timeseries') }}");
+    const ctxOrders = document.getElementById("chartOrders");
+    if (chartOrders) chartOrders.destroy();
+    chartOrders = new Chart(ctxOrders, {
+      type: "line",
+      data: {
+        labels: o.labels,
+        datasets: [{
+          label: "Orders",
+          data: o.values,
+          tension: 0.35
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // 3) Revenue line
+    const r = await getJSON("{{ url_for('admin.analytics_revenue_timeseries') }}");
+    const ctxRevenue = document.getElementById("chartRevenue");
+    if (chartRevenue) chartRevenue.destroy();
+    chartRevenue = new Chart(ctxRevenue, {
+      type: "line",
+      data: {
+        labels: r.labels,
+        datasets: [{
+          label: "Revenue",
+          data: r.values,
+          tension: 0.35
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(v){ return "₹" + v; }
+            }
+          }
+        }
+      }
+    });
+
+    // 4) Top products bar
+    const t = await getJSON("{{ url_for('admin.analytics_top_products') }}");
+    const ctxTop = document.getElementById("chartTopProducts");
+    if (chartTopProducts) chartTopProducts.destroy();
+    chartTopProducts = new Chart(ctxTop, {
+      type: "bar",
+      data: {
+        labels: t.labels,
+        datasets: [{
+          label: "Qty",
+          data: t.values
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  (async function init(){
+    await loadKPIs();
+    await loadCharts();
+  })();
+</script>
+
+{% endblock %}

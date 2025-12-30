@@ -1,0 +1,135 @@
+{% extends "layout/admin_base.html" %}
+{% block admin_content %}
+
+<h3>{{ page_title }}</h3>
+<p class="text-muted">
+  {{ page_description }}
+</p>
+
+<form method="post" onsubmit="prepareJSON()">
+
+  <div id="sections-container"></div>
+
+  <input type="hidden" name="sections_json" id="sections_json">
+
+  <button type="button"
+          class="btn btn-secondary mb-3"
+          onclick="addSection()">
+    + Add Section
+  </button>
+
+  <br>
+
+  <button class="btn btn-success">
+    {{ save_button_text }}
+  </button>
+
+</form>
+
+<script>
+const initialSections = {{ sections | tojson }};
+const container = document.getElementById("sections-container");
+
+function addSection(heading = "", contentHTML = "") {
+  const div = document.createElement("div");
+  div.className = "card mb-3 section";
+
+  div.innerHTML = `
+    <div class="card-body">
+
+      <div class="mb-2">
+        <label>Heading</label>
+        <input type="text" class="form-control heading" value="${heading}">
+      </div>
+
+      <div class="mb-2">
+        <label>Paragraph</label>
+        <textarea class="form-control paragraph" rows="3"></textarea>
+      </div>
+
+      <div class="mb-2">
+        <label>List Items</label>
+        <div class="list-items"></div>
+
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary mt-2"
+                onclick="addListItem(this)">
+          + Add List Item
+        </button>
+      </div>
+
+      <button type="button"
+              class="btn btn-sm btn-danger mt-2"
+              onclick="this.closest('.section').remove()">
+        Remove Section
+      </button>
+
+    </div>
+  `;
+  container.appendChild(div);
+
+  if (contentHTML) hydrateContent(div, contentHTML);
+}
+
+function addListItem(btn, value = "") {
+  const container = btn.closest(".mb-2").querySelector(".list-items");
+  const row = document.createElement("div");
+  row.className = "d-flex mb-1";
+  row.innerHTML = `
+    <input type="text" class="form-control list-item" value="${value}">
+    <button type="button"
+            class="btn btn-sm btn-outline-danger ms-2"
+            onclick="this.parentElement.remove()">×</button>
+  `;
+  container.appendChild(row);
+}
+
+function hydrateContent(section, html) {
+  const temp = document.createElement("div");
+  temp.innerHTML = html;
+
+  const p = temp.querySelector("p");
+  if (p) section.querySelector(".paragraph").value = p.innerText;
+
+  temp.querySelectorAll("li").forEach(li =>
+    addListItem(
+      section.querySelector("button[onclick^='addListItem']"),
+      li.innerText
+    )
+  );
+}
+
+function prepareJSON() {
+  const sections = [];
+
+  document.querySelectorAll(".section").forEach(section => {
+    const heading = section.querySelector(".heading").value.trim();
+    const paragraph = section.querySelector(".paragraph").value.trim();
+    const listItems = section.querySelectorAll(".list-item");
+
+    if (!heading) return;
+
+    let html = "";
+
+    if (paragraph) html += `<p>${paragraph}</p>`;
+
+    if (listItems.length) {
+      html += "<ul>";
+      listItems.forEach(li => {
+        if (li.value.trim()) html += `<li>${li.value.trim()}</li>`;
+      });
+      html += "</ul>";
+    }
+
+    if (html) sections.push({ heading, content: html });
+  });
+
+  document.getElementById("sections_json").value =
+    JSON.stringify(sections);
+}
+
+// Load existing sections
+initialSections.forEach(s => addSection(s.heading, s.content));
+</script>
+
+{% endblock %}

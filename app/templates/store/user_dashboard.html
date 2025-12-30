@@ -1,0 +1,77 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}My Account | My Store{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">My Account</h2>
+
+<div class="row">
+
+  <!-- LEFT: ACCOUNT MENU -->
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <h5 class="mb-3">Account</h5>
+
+        <div class="list-group list-group-flush">
+          <a href="{{ url_for('main.dashboard') }}"
+             class="list-group-item list-group-item-action active">
+            Dashboard
+          </a>
+
+          <a href="{{ url_for('main.orders') }}"
+             class="list-group-item list-group-item-action">
+            My Orders
+          </a>
+
+          <a href="{{ url_for('main.cart_view') }}"
+             class="list-group-item list-group-item-action">
+            My Cart
+          </a>
+
+          <a href="{{ url_for('auth.logout') }}"
+             class="list-group-item list-group-item-action text-danger">
+            Logout
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: DASHBOARD CONTENT -->
+  <div class="col-md-8">
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <h4 class="mb-3">
+          Welcome, {{ current_user.email }}
+        </h4>
+
+        <p class="text-muted">
+          From here you can view your orders, manage your cart, and continue shopping.
+        </p>
+
+        <div class="mt-4">
+          <a href="{{ url_for('main.products') }}"
+             class="btn btn-primary me-2">
+            Continue Shopping
+          </a>
+
+          <a href="{{ url_for('main.orders') }}"
+             class="btn btn-outline-secondary">
+            View My Orders
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

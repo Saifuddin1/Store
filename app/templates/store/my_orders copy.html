@@ -1,0 +1,189 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+
+{% set STATUS_COLORS = {
+  "PLACED": "secondary",
+  "CONFIRMED": "primary",
+  "PACKED": "info",
+  "SHIPPED": "warning",
+  "OUT_FOR_DELIVERY": "dark",
+  "DELIVERED": "success",
+  "CANCELLED": "danger",
+  "RETURNED": "danger"
+} %}
+
+<h2 class="mb-4">📦 My Orders</h2>
+
+{% if orders %}
+
+  {% for order in orders %}
+  <div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <strong>Order #{{ order.id }}</strong><br>
+          <small class="text-muted">
+            Placed on {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
+          </small>
+        </div>
+
+        <span class="badge bg-{{ STATUS_COLORS.get(order.status, 'secondary') }}">
+          {{ order.status.replace("_", " ") }}
+        </span>
+      </div>
+
+      <hr>
+
+      <!-- ITEMS -->
+<!-- ITEMS -->
+<ul class="list-unstyled small mb-3">
+
+  {% for item in order.items %}
+  <li class="mb-2">
+
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <strong>{{ item.product_name }}</strong><br>
+        <small class="text-muted">
+          Qty: {{ item.qty }}
+        </small>
+      </div>
+
+      <div class="text-end">
+        ₹{{ item.subtotal }}<br>
+
+        {% if order.status == "DELIVERED" %}
+          <button class="btn btn-sm btn-outline-primary mt-1"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#reviewForm{{ order.id }}{{ item.id }}">
+            ⭐ Write Review
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- REVIEW FORM (DELIVERED ONLY) -->
+    {% if order.status == "DELIVERED" %}
+    <div class="collapse mt-2"
+         id="reviewForm{{ order.id }}{{ item.id }}">
+
+      <form method="POST"
+            action="{{ url_for('main.submit_review_from_order', product_id=item.product_id) }}"
+            class="card card-body bg-light">
+
+        <div class="mb-2">
+          <label class="form-label fw-semibold small">Rating</label>
+          <select name="rating"
+                  class="form-select form-select-sm"
+                  required>
+            <option value="">Select</option>
+            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+            <option value="4">⭐⭐⭐⭐ (4)</option>
+            <option value="3">⭐⭐⭐ (3)</option>
+            <option value="2">⭐⭐ (2)</option>
+            <option value="1">⭐ (1)</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label fw-semibold small">Title (optional)</label>
+          <input type="text"
+                 name="title"
+                 class="form-control form-control-sm"
+                 maxlength="150"
+                 placeholder="Short summary">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label fw-semibold small">Review</label>
+          <textarea name="comment"
+                    rows="3"
+                    class="form-control form-control-sm"
+                    required
+                    placeholder="Share your experience"></textarea>
+        </div>
+
+        <div class="text-end">
+          <button type="submit"
+                  class="btn btn-sm btn-primary">
+            Submit Review
+          </button>
+        </div>
+
+      </form>
+    </div>
+    {% endif %}
+
+  </li>
+  {% endfor %}
+
+</ul>
+
+
+      <p class="fw-bold mb-2">
+        Total: ₹{{ order.total_amount }}
+      </p>
+
+      <!-- TRACKING INFO -->
+      {% if order.status in ["DISPATCHED", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED"] %}
+        <div class="alert alert-info small mt-2">
+          <strong>Courier:</strong> {{ order.courier_name or "—" }}<br>
+          <strong>Tracking No:</strong> {{ order.tracking_number or "—" }}
+        </div>
+      {% endif %}
+
+      <!-- ACTIONS -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+
+        <!-- TIMELINE -->
+        <ul class="list-inline small text-muted mb-0">
+          <li class="list-inline-item
+              {% if order.status in ['PLACED','CONFIRMED','PACKED','SHIPPED','OUT_FOR_DELIVERY','DELIVERED'] %}
+                fw-bold text-primary
+              {% endif %}
+          ">● Placed</li>
+
+          <li class="list-inline-item">→</li>
+
+          <li class="list-inline-item
+              {% if order.status in ['SHIPPED','OUT_FOR_DELIVERY','DELIVERED'] %}
+                fw-bold text-warning
+              {% endif %}
+          ">● Shipped</li>
+
+          <li class="list-inline-item">→</li>
+
+          <li class="list-inline-item
+              {% if order.status == 'DELIVERED' %}
+                fw-bold text-success
+              {% endif %}
+          ">● Delivered</li>
+        </ul>
+
+        <!-- CANCEL BUTTON -->
+        {% if order.status in ["PLACED", "CONFIRMED"] %}
+          <a href="{{ url_for('main.cancel_order', order_id=order.id) }}"
+             class="btn btn-sm btn-outline-danger">
+            ❌ Cancel Order
+          </a>
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+
+{% else %}
+  <div class="alert alert-info">
+    You have not placed any orders yet.
+  </div>
+{% endif %}
+
+{% endblock %}

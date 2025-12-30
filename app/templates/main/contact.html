@@ -1,0 +1,125 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}Contact Us | MyStore{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+
+  <!-- PAGE HEADER -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">📩 Contact Us</h2>
+    <p class="text-muted">
+      Have a question, issue, or feedback?  
+      We usually respond within <strong>24 hours</strong>.
+    </p>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- LEFT: CONTACT INFO -->
+    <div class="col-md-4">
+
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+
+          <h5 class="fw-bold mb-3">📞 Get in Touch</h5>
+
+          <p class="mb-2">
+            <strong>Email:</strong><br>
+            {{ info_data.get("email", "rajusaifuddinrs1@gmail.com") }}
+          </p>
+
+          <p class="mb-2">
+            <strong>Phone:</strong><br>
+            +91 {{ info_data.get("mobile", "0000000000") }}
+          </p>
+
+          <p class="mb-3">
+            <strong>Working Hours:</strong><br>
+            {{ info_data.get("working_hours", "Mon – Sat (10:00 AM – 6:00 PM)") }}
+          </p>
+
+          <hr>
+
+          <h6 class="fw-bold">📍 Address</h6>
+          <p class="text-muted small mb-0">
+            {{ info_data.get("address", "MyStore Pvt Ltd, India") }}
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: CONTACT FORM -->
+    <div class="col-md-8">
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <h5 class="fw-bold mb-3">✉ Send Us a Message</h5>
+
+          <form method="POST">
+
+            <div class="row">
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text"
+                       name="name"
+                       class="form-control"
+                       placeholder="Your name"
+                       required>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email"
+                       name="email"
+                       class="form-control"
+                       placeholder="you@example.com"
+                       required>
+              </div>
+
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Subject</label>
+              <input type="text"
+                     name="subject"
+                     class="form-control"
+                     placeholder="Order / Product / Support"
+                     required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Message</label>
+              <textarea name="message"
+                        class="form-control"
+                        rows="5"
+                        placeholder="Write your message here..."
+                        required></textarea>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary w-100">
+              📤 Send Message
+            </button>
+
+            <p class="text-muted small mt-3 text-center">
+              We respect your privacy. Your details are never shared.
+            </p>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}Cancel Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- PAGE HEADER -->
+  <div class="mb-4">
+    <h3 class="text-danger">
+      ❌ Cancel Order #{{ order.id }}
+    </h3>
+    <p class="text-muted mb-0">
+      Please review the details before cancelling your order.
+    </p>
+  </div>
+
+  <div class="row">
+
+    <!-- LEFT: ORDER SUMMARY -->
+    <div class="col-md-5 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <h5 class="mb-3">📦 Order Summary</h5>
+
+          <p class="mb-1">
+            <strong>Status:</strong>
+            <span class="badge bg-secondary">
+              {{ order.status.replace("_", " ") }}
+            </span>
+          </p>
+
+          <p class="mb-1">
+            <strong>Total Amount:</strong>
+            ₹{{ order.total_amount }}
+          </p>
+
+          <p class="mb-3">
+            <strong>Placed On:</strong>
+            {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
+          </p>
+
+          <hr>
+
+          <h6 class="mb-2">Items</h6>
+          <ul class="list-unstyled small">
+            {% for item in order.items %}
+              <li class="d-flex justify-content-between">
+                <span>{{ item.product_name }} × {{ item.qty }}</span>
+                <span>₹{{ item.subtotal }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CANCEL FORM -->
+    <div class="col-md-7">
+      <div class="card shadow-sm border-danger">
+        <div class="card-body">
+
+          <h5 class="text-danger mb-3">
+            ⚠️ Confirm Cancellation
+          </h5>
+
+          <div class="alert alert-warning small">
+            • This action cannot be undone.<br>
+            • Once cancelled, the order cannot be processed again.
+          </div>
+
+          <form method="POST">
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                Reason for cancellation <span class="text-danger">*</span>
+              </label>
+              <textarea
+                name="reason"
+                class="form-control"
+                rows="4"
+                placeholder="Please tell us why you want to cancel this order..."
+                required></textarea>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit"
+                      class="btn btn-danger px-4"
+                      onclick="return confirm('Are you sure you want to cancel this order?');">
+                ❌ Cancel Order
+              </button>
+
+              <a href="{{ url_for('main.orders') }}"
+                 class="btn btn-outline-secondary">
+                ← Back to Orders
+              </a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

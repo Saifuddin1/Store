@@ -1,0 +1,113 @@
+{% extends "layout/admin_base.html" %}
+{% block title %}Edit About Page{% endblock %}
+
+{% block admin_content %}
+<h3 class="mb-4">✏ Edit About Page</h3>
+
+<!-- ================= MAIN SAVE FORM ================= -->
+<form method="POST">
+
+  <!-- HERO -->
+  <h5>Hero Section</h5>
+  <input name="hero_title" class="form-control mb-2" value="{{ about.hero_title }}">
+  <textarea name="hero_subtitle" class="form-control mb-2">{{ about.hero_subtitle }}</textarea>
+  <input name="hero_image" class="form-control mb-4" value="{{ about.hero_image }}">
+
+  <!-- WHO -->
+  <h5>Who We Are</h5>
+  <input name="who_title" class="form-control mb-2" value="{{ about.who_title }}">
+  <textarea name="who_content" class="form-control mb-4">{{ about.who_content }}</textarea>
+
+  <!-- MISSION -->
+  <h5>Our Mission</h5>
+  <input name="mission_title" class="form-control mb-2" value="{{ about.mission_title }}">
+  <textarea name="mission_content" class="form-control mb-4">{{ about.mission_content }}</textarea>
+
+  <!-- WHY BLOCKS -->
+  <h5 class="mt-4">Why Choose Us</h5>
+
+  {% if about.why_blocks %}
+    {% for block in about.why_blocks %}
+      <div class="row mb-3 border rounded p-2 align-items-center">
+
+        <div class="col-md-2">
+          <input name="icon_{{ loop.index0 }}" class="form-control" value="{{ block.icon }}">
+        </div>
+
+        <div class="col-md-4">
+          <input name="title_{{ loop.index0 }}" class="form-control" value="{{ block.title }}">
+        </div>
+
+        <div class="col-md-4">
+          <input name="text_{{ loop.index0 }}" class="form-control" value="{{ block.text }}">
+        </div>
+
+        <div class="col-md-2 text-end">
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  onclick="deleteWhyBlock({{ loop.index0 }})">
+            ❌
+          </button>
+        </div>
+
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No blocks added yet.</p>
+  {% endif %}
+
+  <button class="btn btn-primary mt-3">💾 Save About Page</button>
+</form>
+
+<hr class="my-4">
+
+<!-- ================= ADD WHY BLOCK TOGGLE ================= -->
+<button class="btn btn-outline-primary mb-3"
+        onclick="toggleWhyForm()">
+  ➕ Add Why Block
+</button>
+
+<!-- ================= ADD WHY BLOCK FORM (HIDDEN) ================= -->
+<div id="addWhyBlockForm" class="card shadow-sm p-3" style="display:none;">
+  <h6 class="mb-3">Add New Why Block</h6>
+
+  <form method="POST" action="{{ url_for('admin.create_why_block') }}">
+    <div class="row g-2">
+
+      <div class="col-md-2">
+        <input name="icon" class="form-control" placeholder="Icon (emoji)">
+      </div>
+
+      <div class="col-md-4">
+        <input name="title" class="form-control" placeholder="Title" required>
+      </div>
+
+      <div class="col-md-4">
+        <input name="text" class="form-control" placeholder="Description" required>
+      </div>
+
+      <div class="col-md-2">
+        <button class="btn btn-success w-100">Add</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<!-- ================= DELETE FORM ================= -->
+<form id="deleteWhyForm" method="POST" style="display:none;"></form>
+
+<script>
+function deleteWhyBlock(index) {
+  const form = document.getElementById("deleteWhyForm");
+  form.action = `/admin/about/why/delete/${index}`;
+  form.submit();
+}
+
+function toggleWhyForm() {
+  const box = document.getElementById("addWhyBlockForm");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+</script>
+
+{% endblock %}

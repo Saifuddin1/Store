@@ -1,0 +1,43 @@
+{% extends "layout/customer_base.html" %}
+{% block title %}Privacy Policy | MyStore{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">Privacy Policy</h2>
+    <p class="text-muted">
+      Your privacy is important to us. This policy explains how we
+      collect, use, and protect your information.
+    </p>
+  </div>
+
+  {% if policy and policy.sections %}
+
+    {% for s in policy.sections %}
+      <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="fw-semibold mb-3">
+            {{ loop.index }}. {{ s.heading }}
+          </h5>
+          <div class="text-muted">
+            {{ s.content | safe }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="text-center mt-4">
+      <small class="text-muted">
+        Last updated on {{ policy.updated_at.strftime("%d %B %Y") }}
+      </small>
+    </div>
+
+  {% else %}
+    <p class="text-center text-muted">
+      Privacy policy will be updated soon.
+    </p>
+  {% endif %}
+
+</div>
+{% endblock %}

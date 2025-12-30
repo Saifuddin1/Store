@@ -1,0 +1,141 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}Checkout | My Store{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Checkout</h2>
+
+<a href="{{ url_for('main.cart_view') }}" class="btn btn-link mb-3">
+  ← Back to Cart
+</a>
+
+<form method="POST" action="{{ url_for('main.place_order') }}">
+
+<div class="row">
+
+  <!-- LEFT: Address Selection -->
+  <div class="col-md-7">
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Delivery Address</h5>
+
+          <a href="{{ url_for('main.add_address') }}"
+             class="btn btn-sm btn-outline-primary">
+            + Add Address
+          </a>
+        </div>
+
+        {% if addresses %}
+          {% for addr in addresses %}
+            <label class="border rounded p-3 mb-3 d-block"
+                  style="cursor:pointer;">
+
+              <div class="d-flex justify-content-between align-items-start">
+
+                <!-- ADDRESS TEXT -->
+                <div>
+                  <strong>{{ addr.full_name }}</strong><br>
+                  {{ addr.address_line1 }},
+                  {{ addr.city }},
+                  {{ addr.state }} – {{ addr.postal_code }}<br>
+                  <span class="text-muted">
+                    Phone: {{ addr.phone }}
+                  </span>
+                </div>
+
+                <!-- RADIO -->
+                <div class="ms-3 pt-1">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="address_id"
+                    value="{{ addr.id }}"
+                    {% if addr.is_default or loop.first %}checked{% endif %}
+                    required
+                  >
+                </div>
+
+              </div>
+
+            </label>
+          {% endfor %}
+
+
+        {% else %}
+          <div class="alert alert-warning">
+            No delivery address found.
+            <a href="{{ url_for('main.add_address') }}">Add Address</a>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Order Summary -->
+  <div class="col-md-5">
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <h5 class="mb-3">Order Summary</h5>
+
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="text-center">Qty</th>
+              <th class="text-end">Subtotal</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ item.final_price * item.qty }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <hr>
+
+        <p class="mb-1">
+          <strong>Total Items:</strong> {{ totals.total_qty }}
+        </p>
+
+        <p class="mb-3">
+          <strong>Total Amount:</strong>
+          <span class="fs-5 fw-bold">
+            {{ totals.total_price }}
+          </span>
+        </p>
+
+        {% if addresses %}
+          <div class="d-grid">
+            <button type="submit"
+                    class="btn btn-primary btn-lg">
+              Place Order (Cash on Delivery)
+            </button>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</form>
+
+{% endblock %}

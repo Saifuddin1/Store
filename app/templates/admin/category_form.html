@@ -1,0 +1,68 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}
+  {{ "Edit Category" if category else "Add Category" }} | Admin
+{% endblock %}
+
+{% block admin_content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <h3 class="mb-4 text-center">
+          {{ "Edit Category" if category else "Add Category" }}
+        </h3>
+
+        <form method="POST">
+
+          <div class="mb-3">
+            <label class="form-label">Category Name</label>
+            <input
+              type="text"
+              name="name"
+              class="form-control"
+              placeholder="Enter category name"
+              value="{{ category.name if category else '' }}"
+              required
+            >
+          </div>
+
+          {% if category %}
+          <div class="form-check mb-4">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="is_active"
+              id="is_active"
+              {% if category.is_active %}checked{% endif %}
+            >
+            <label class="form-check-label" for="is_active">
+              Active
+            </label>
+          </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between">
+            <a href="{{ url_for('admin.categories') }}"
+               class="btn btn-outline-secondary">
+              ← Back
+            </a>
+
+            <button type="submit"
+                    class="btn btn-primary">
+              Save Category
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

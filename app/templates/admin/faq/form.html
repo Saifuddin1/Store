@@ -1,0 +1,43 @@
+{% extends "layout/admin_base.html" %}
+{% block title %}FQAs form | Admin{% endblock %}
+
+{% block admin_content %}
+
+<h3>{{ "Edit FAQ" if faq else "Add FAQ" }}</h3>
+
+<form method="post">
+
+  <div class="mb-3">
+    <label>Question</label>
+    <input type="text" name="question"
+           class="form-control"
+           value="{{ faq.question if faq else '' }}"
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label>Answer</label>
+    <textarea name="answer" rows="4"
+              class="form-control"
+              required>{{ faq.answer if faq else '' }}</textarea>
+  </div>
+
+  <div class="mb-3">
+    <label>Display Order</label>
+    <input type="number" name="display_order"
+           class="form-control"
+           value="{{ faq.display_order if faq else 0 }}">
+  </div>
+
+  <div class="form-check mb-3">
+    <input type="checkbox" name="is_active"
+           class="form-check-input"
+           {% if faq and faq.is_active %}checked{% endif %}>
+    <label class="form-check-label">Active</label>
+  </div>
+
+  <button class="btn btn-success">Save</button>
+
+</form>
+
+{% endblock %}

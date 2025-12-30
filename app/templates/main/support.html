@@ -1,0 +1,97 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}Help & Support | My Store{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">🆘 Help & Support</h2>
+
+<div class="row g-4">
+
+  <!-- LEFT: SUPPORT OPTIONS -->
+  <div class="col-md-6">
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <h5 class="mb-3">📞 Contact Support</h5>
+
+        <p class="text-muted mb-2">
+          Need help with an order, payment, or delivery?
+        </p>
+
+        <ul class="list-unstyled small">
+          <li>📧 Email: <strong>support@mystore.com</strong></li>
+          <li>⏰ Support Hours: Mon–Sat (10 AM – 7 PM)</li>
+        </ul>
+
+        <a href="{{ url_for('main.contact') }}"
+           class="btn btn-outline-primary btn-sm mt-2">
+          Contact Us
+        </a>
+
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <h5 class="mb-3">📦 Order Help</h5>
+
+        <ul class="small text-muted mb-3">
+          <li>• Track your order</li>
+          <li>• Cancel an order</li>
+          <li>• Delivery issues</li>
+          <li>• Return & refund queries</li>
+        </ul>
+
+        <a href="{{ url_for('main.orders') }}"
+           class="btn btn-outline-secondary btn-sm">
+          View My Orders
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: QUICK LINKS -->
+  <div class="col-md-6">
+
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+
+        <h5 class="mb-3">📚 Quick Help</h5>
+
+        <div class="list-group list-group-flush">
+
+          <a href="{{ url_for('main.faq') }}"
+             class="list-group-item list-group-item-action">
+            ❓ Frequently Asked Questions
+          </a>
+
+          <a href="{{ url_for('main.privacy_policy') }}"
+             class="list-group-item list-group-item-action">
+            🔐 Privacy Policy
+          </a>
+
+          <a href="{{ url_for('main.terms_and_conditions') }}"
+             class="list-group-item list-group-item-action">
+            📄 Terms & Conditions
+          </a>
+
+          <a href="{{ url_for('main.contact') }}"
+             class="list-group-item list-group-item-action">
+            ✉️ Contact Support
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}Order #{{ order.id }} | Admin{% endblock %}
+
+{% block admin_content %}
+
+<h3 class="mb-3">📦 Order #{{ order.id }}</h3>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+
+    <!-- BASIC INFO -->
+    <p>
+      <strong>Status:</strong>
+      <span class="badge bg-info">
+        {{ order.status.replace("_", " ") }}
+      </span>
+    </p>
+
+    <p>
+      <strong>Customer:</strong> {{ order.user.email }} <br>
+      <strong>Placed On:</strong>
+      {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
+    </p>
+
+    <p>
+      <strong>Total Amount:</strong> ₹{{ order.total_amount }}
+    </p>
+
+    <hr>
+
+    <!-- ITEMS -->
+    <h5>Items</h5>
+    <ul class="list-unstyled">
+      {% for item in order.items %}
+        <li>
+          {{ item.product_name }} × {{ item.qty }}
+          <span class="float-end">₹{{ item.subtotal }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <hr>
+
+    <!-- ADMIN ACTIONS -->
+    <h5 class="mt-4">⚙ Admin Actions</h5>
+
+
+    {% if order.status == "PLACED" %}
+      <form method="POST"
+            action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+            class="mb-3">
+        <input type="hidden" name="status" value="CONFIRMED">
+        <button class="btn btn-primary">
+          ✅ Confirm Order
+        </button>
+      </form>
+    {% endif %}
+
+    {% if order.status == "CONFIRMED" %}
+      <form method="POST"
+            action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+            class="mb-3">
+        <input type="hidden" name="status" value="PACKED">
+        <button class="btn btn-warning">
+          📦 Mark as Packed
+        </button>
+      </form>
+    {% endif %}
+
+    {% if order.status == "PACKED" %}
+      <form method="POST"
+            action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+            class="mb-3">
+        <input type="hidden" name="status" value="SHIPPED">
+        <button class="btn btn-info">
+          🚚 Dispatch Order
+        </button>
+      </form>
+    {% endif %}
+    {% if order.status == "SHIPPED" %}
+      <form method="POST"
+            action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+            class="mb-3">
+        <input type="hidden" name="status" value="DELIVERED">
+        <button class="btn btn-success">
+          📬 Mark as Delivered
+        </button>
+      </form>
+    {% endif %}
+
+    {% if order.status in ["PLACED", "CONFIRMED"] %}
+      <hr>
+      <h5 class="mt-4 text-danger">❌ Cancel Order</h5>
+
+      <form method="POST"
+            action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+            class="mt-3">
+
+        <input type="hidden" name="status" value="CANCELLED">
+
+        <div class="mb-3">
+          <label class="form-label">
+            Cancellation Reason
+          </label>
+          <textarea name="remark"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Reason for cancelling this order"
+                    required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-danger">
+          Cancel Order & Notify Customer
+        </button>
+      </form>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- STATUS HISTORY -->
+<div class="card shadow-sm">
+  <div class="card-body">
+
+    <h5 class="mb-3">🕒 Order Status History</h5>
+
+    {% if order.status_history %}
+      <ul class="list-group list-group-flush">
+        {% for h in order.status_history|sort(attribute="changed_at") %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <strong>
+                  {{ h.old_status or "—" }}
+                  →
+                  {{ h.new_status }}
+                </strong>
+                <br>
+                <small class="text-muted">
+                  Changed by:
+                  {{ h.admin.email if h.admin else "System / Customer" }}
+                </small>
+
+                {% if h.remark %}
+                  <div class="mt-1 text-muted">
+                    📝 {{ h.remark }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <small class="text-muted">
+                {{ h.changed_at.strftime("%d %b %Y, %I:%M %p") }}
+              </small>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">
+        No status changes recorded yet.
+      </p>
+    {% endif %}
+
+  </div>
+</div>
+
+<a href="{{ url_for('admin.orders') }}"
+   class="btn btn-outline-secondary mt-3">
+  ← Back to Orders
+</a>
+
+{% endblock %}

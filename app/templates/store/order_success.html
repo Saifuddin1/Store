@@ -1,0 +1,118 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}Order Placed | My Store{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <!-- SUCCESS MESSAGE -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body text-center p-5">
+
+        <div class="display-4 text-success mb-3">🎉</div>
+
+        <h2 class="mb-2">Order Placed Successfully!</h2>
+
+        <p class="text-muted">
+          Thank you for your purchase. Your order has been placed and will be
+          delivered soon.
+        </p>
+
+        <a href="/" class="btn btn-primary mt-3">
+          Continue Shopping
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ORDER DETAILS -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <h5 class="mb-3">Order Details</h5>
+
+        <p class="mb-1">
+          <strong>Order ID:</strong> #{{ order.id }}
+        </p>
+        <p class="mb-1">
+          <strong>Status:</strong>
+          <span class="badge bg-info text-dark">
+            {{ order.status }}
+          </span>
+        </p>
+        <p class="mb-1">
+          <strong>Total Amount:</strong>
+          <span class="fw-bold">
+            {{ order.total_amount }}
+          </span>
+        </p>
+        <p class="mb-0">
+          <strong>Placed On:</strong>
+          {{ order.created_at.strftime("%d %b %Y %H:%M") }}
+        </p>
+
+      </div>
+    </div>
+
+    <!-- DELIVERY ADDRESS -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <h5 class="mb-3">Delivery Address</h5>
+
+        <p class="mb-0">
+          <strong>{{ order.address.full_name }}</strong><br>
+          {{ order.address.address_line1 }}<br>
+
+          {% if order.address.address_line2 %}
+            {{ order.address.address_line2 }}<br>
+          {% endif %}
+
+          {{ order.address.city }},
+          {{ order.address.state }} – {{ order.address.postal_code }}<br>
+          {{ order.address.country }}<br>
+          <span class="text-muted">
+            Phone: {{ order.address.phone }}
+          </span>
+        </p>
+
+      </div>
+    </div>
+
+    <!-- ORDER ITEMS -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <h5 class="mb-3">Items in Your Order</h5>
+
+        <table class="table table-sm align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Product</th>
+              <th class="text-center">Qty</th>
+              <th class="text-end">Price</th>
+              <th class="text-end">Subtotal</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for item in order.items %}
+            <tr>
+              <td>{{ item.product_name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">{{ item.price }}</td>
+              <td class="text-end">{{ item.subtotal }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

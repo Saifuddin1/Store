@@ -1,0 +1,63 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Create Account | My Store{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <h3 class="text-center mb-3">Create Account</h3>
+        <p class="text-center text-muted mb-4">
+          Join us and start shopping
+        </p>
+
+        <form method="POST">
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              placeholder="Enter your email"
+              required
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              placeholder="Create a password"
+              required
+            >
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-dark">
+              Create Account
+            </button>
+          </div>
+
+        </form>
+
+        <hr class="my-4">
+
+        <p class="text-center mb-0">
+          Already have an account?
+          <a href="{{ url_for('auth.login') }}">
+            Login
+          </a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

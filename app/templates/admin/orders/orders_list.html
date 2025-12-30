@@ -1,0 +1,103 @@
+{% extends "layout/admin_base.html" %}
+
+{% block title %}Orders | Admin{% endblock %}
+
+{% block admin_content %}
+
+<h2 class="mb-4">All Admin Orders</h2>
+
+<!-- FILTER -->
+<form method="GET" class="row g-2 mb-4">
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">All Statuses</option>
+
+      {% for s in [
+        "PLACED","CONFIRMED","PACKED",
+        "SHIPPED","OUT_FOR_DELIVERY",
+        "DELIVERED","CANCELLED","RETURNED"
+      ] %}
+        <option value="{{ s }}"
+          {% if selected_status == s %}selected{% endif %}>
+          {{ s.replace("_"," ").title() }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100">
+      Filter
+    </button>
+  </div>
+</form>
+
+<!-- ORDERS TABLE -->
+<div class="card shadow-sm">
+  <div class="card-body table-responsive">
+
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Order ID</th>
+          <th>User</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>#{{ o.id }}</td>
+          <td>{{ o.user.email }}</td>
+          <td>{{ o.created_at.strftime("%d %b %Y") }}</td>
+          <td>₹{{ o.total_amount }}</td>
+
+          <!-- STATUS BADGE -->
+          <td>
+            {% if o.status == "PLACED" %}
+              <span class="badge bg-warning">Placed</span>
+            {% elif o.status == "CONFIRMED" %}
+              <span class="badge bg-info">Confirmed</span>
+            {% elif o.status == "PACKED" %}
+              <span class="badge bg-primary">Packed</span>
+            {% elif o.status == "SHIPPED" %}
+              <span class="badge bg-secondary">Shipped</span>
+            {% elif o.status == "OUT_FOR_DELIVERY" %}
+              <span class="badge bg-dark">Out for Delivery</span>
+            {% elif o.status == "DELIVERED" %}
+              <span class="badge bg-success">Delivered</span>
+            {% elif o.status == "CANCELLED" %}
+              <span class="badge bg-danger">Cancelled</span>
+            {% elif o.status == "RETURNED" %}
+              <span class="badge bg-danger">Returned</span>
+            {% endif %}
+          </td>
+
+          <td class="text-end">
+            <a href="{{ url_for('admin.order_detail', order_id=o.id) }}"
+               class="btn btn-sm btn-outline-primary">
+              View
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            No orders found
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

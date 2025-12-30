@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 105
+max-complexity = 10
+exclude = .git,__pycache__,*pyc,*env,docs,docker-app,*migrations,*log,*json, email_templates.py
+per_file_ignores =
+    __init__.py: E402,F401,F403,
+    runserver.py: F401
+    utils.py:

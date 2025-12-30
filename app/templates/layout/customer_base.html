@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}My Store{% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+  <!-- Custom UI Styling -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    footer {
+      background: #111;
+      color: #ccc;
+    }
+
+    footer a {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: #fff;
+    }
+
+    /* Cart badge */
+    .navbar .badge {
+      font-size: 0.65rem;
+      padding: 4px 6px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+{% set cart_count = session.get("cart", {}) | length %}
+
+<!-- ===================== -->
+<!-- CUSTOMER NAVBAR -->
+<!-- ===================== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center"
+       href="{{ url_for('main.home') }}">
+      {% if site_settings and site_settings.logo_light %}
+        <img src="{{ url_for('static', filename=site_settings.logo_light) }}"
+             height="40"
+             class="me-2"
+             alt="{{ site_settings.site_name }}">
+      {% endif %}
+      <span>{{ site_settings.site_name }}</span>
+    </a>
+
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#customerNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="customerNavbar">
+
+      <!-- 🔍 SEARCH -->
+    <form class="d-flex mx-lg-3 my-2 my-lg-0"
+          method="GET"
+      style="max-width: 420px; width: 100%;">
+        <input class="form-control me-2"
+               type="search"
+               name="q"
+               placeholder="Search products or categories..."
+               value="{{ request.args.get('q', '') }}">
+        <button class="btn btn-outline-light" type="submit">🔍</button>
+      </form>
+
+      <!-- RIGHT NAV -->
+      <ul class="navbar-nav ms-auto align-items-center">
+
+        <!-- 🛒 CART -->
+        <li class="nav-item me-3 position-relative">
+          <a class="nav-link" href="{{ url_for('main.cart_view') }}">
+            🛒
+            {% if cart_count > 0 %}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ cart_count }}
+              </span>
+            {% endif %}
+          </a>
+        </li>
+
+        {% if current_user.is_authenticated %}
+
+          <!-- 👤 PROFILE DROPDOWN -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle"
+               href="#"
+               role="button"
+               data-bs-toggle="dropdown">
+              👤
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+
+              <li>
+                <span class="dropdown-item-text small text-muted">
+                  {{ current_user.email }}
+                </span>
+              </li>
+
+              <li><hr class="dropdown-divider"></li>
+
+              <li>
+                <a class="dropdown-item"
+                   href="{{ url_for('main.orders') }}">
+                  📦 My Orders
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item"
+                   href="{{ url_for('main.dashboard') }}">
+                  📊 Dashboard
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item"
+                   href="{{ url_for('main.wishlist') }}">
+                  ❤️ Wishlist
+                </a>
+              </li>
+
+              <li><hr class="dropdown-divider"></li>
+
+              <li>
+                <a class="dropdown-item text-danger"
+                   href="{{ url_for('auth.logout') }}">
+                  🚪 Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+
+        {% else %}
+
+          <!-- LOGIN -->
+          <li class="nav-item">
+            <a class="nav-link"
+               href="{{ url_for('auth.login') }}">
+              Login
+            </a>
+          </li>
+
+        {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== -->
+<!-- FLASH MESSAGES -->
+<!-- ===================== -->
+<div class="container mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
+<!-- ===================== -->
+<!-- MAIN CONTENT -->
+<!-- ===================== -->
+<div class="container my-4">
+  {% block content %}{% endblock %}
+</div>
+
+<!-- ===================== -->
+<!-- FOOTER -->
+<!-- ===================== -->
+<footer class="mt-5 py-4">
+  <div class="container text-center">
+    <p class="mb-1">© {{ current_year }} {{ site_settings.site_name }}</p>
+    <small>Quality Sarees • T-Shirts • Fashion</small>
+  </div>
+
+  <hr>
+
+  <div class="text-center small text-muted mb-3">
+    <a href="{{ url_for('main.about') }}">About</a> |
+    <a href="{{ url_for('main.contact') }}">Contact</a> |
+    <a href="{{ url_for('main.privacy_policy') }}">Privacy</a> |
+    <a href="{{ url_for('main.terms_and_conditions') }}">Terms</a> |
+    <a href="{{ url_for('main.faq') }}">FAQ</a> |
+    <a href="{{ url_for('main.shipping_returns') }}">Shipping</a>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

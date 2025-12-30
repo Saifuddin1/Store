@@ -1,0 +1,46 @@
+{% extends "layout/customer_base.html" %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">❤️ My Wishlist</h2>
+
+{% if items %}
+<div class="row">
+
+  {% for w in items %}
+  <div class="col-md-3 mb-4">
+
+    <div class="card h-100 shadow-sm">
+
+      {% if w.product.primary_image %}
+        <img src="{{ url_for('static', filename=w.product.primary_image) }}"
+             class="card-img-top"
+             style="height:200px; object-fit:cover;">
+      {% endif %}
+
+      <div class="card-body">
+        <h6>{{ w.product.name }}</h6>
+
+        <p class="fw-bold">₹{{ w.product.final_price }}</p>
+
+        <a href="{{ url_for('main.product_detail', slug=w.product.slug) }}"
+           class="btn btn-outline-primary btn-sm w-100">
+          View Product
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+  {% endfor %}
+
+</div>
+{% else %}
+<div class="alert alert-info">
+  Your wishlist is empty.
+</div>
+{% endif %}
+
+{% endblock %}
