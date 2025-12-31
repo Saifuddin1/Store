@@ -4,50 +4,50 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 class="mb-0">All Products</h2>
-  <a href="/" class="btn btn-link">← Back to Home</a>
+<!-- ================= HEADER ================= -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+  <h2 class="mb-2 mb-md-0">All Products</h2>
+  <a href="{{ url_for('main.home') }}" class="btn btn-link px-0">
+    ← Back to Home
+  </a>
 </div>
 
+<!-- ================= PRODUCTS ================= -->
 {% if products %}
 <div class="row">
 
-{% for p in products %}
-<div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+  {% for p in products %}
+  <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
 
-  <div class="card h-100 shadow-sm product-card">
+    <div class="card h-100 shadow-sm product-card position-relative">
 
-    <!-- IMAGE + BADGES -->
-    <div class="position-relative">
-
+      <!-- IMAGE -->
       {% if p.primary_image %}
         <img src="{{ url_for('static', filename=p.primary_image) }}"
-             class="card-img-top"
-             style="height:260px; width:100%;">
+             class="card-img-top img-fluid"
+             style="aspect-ratio: 3 / 4; object-fit: cover;"
+             alt="{{ p.name }}">
       {% else %}
         <div class="bg-light d-flex align-items-center justify-content-center"
-             style="height:220px;">
+             style="aspect-ratio: 3 / 4;">
           <span class="text-muted">No Image</span>
         </div>
       {% endif %}
-      
-      <!-- 📦 STOCK STATUS BADGE -->
+
+      <!-- STOCK BADGES -->
       {% if p.stock_quantity <= 0 %}
         <span class="badge bg-danger position-absolute top-50 start-50 translate-middle px-3 py-2">
           ❌ Out of Stock
         </span>
-
       {% elif p.stock_quantity <= 2 %}
-        <span class="badge bg-danger position-absolute bottom-0 end-0 m-2 px-2 py-1">
+        <span class="badge bg-danger position-absolute bottom-0 end-0 m-2">
           🔥 Only {{ p.stock_quantity }} left
         </span>
-
       {% elif p.stock_quantity <= 5 %}
-        <span class="badge bg-warning text-dark position-absolute bottom-0 end-0 m-2 px-2 py-1">
+        <span class="badge bg-warning text-dark position-absolute bottom-0 end-0 m-2">
           ⏳ Limited Stock
         </span>
       {% endif %}
-
 
       <!-- ❤️ WISHLIST -->
       {% if current_user.is_authenticated %}
@@ -72,7 +72,7 @@
 
       <!-- 💸 DISCOUNT -->
       {% if p.final_price < p.price %}
-        <span class="badge bg-success position-absolute bottom-0 start-0 m-2 px-2 py-1">
+        <span class="badge bg-success position-absolute bottom-0 start-0 m-2">
           {% if p.discount_type == "percent" %}
             {{ p.discount_value|int }}% OFF
           {% else %}
@@ -81,44 +81,47 @@
         </span>
       {% endif %}
 
-    </div>
+      <!-- BODY -->
+      <div class="card-body d-flex flex-column">
 
-    <!-- DETAILS -->
-    <div class="card-body d-flex flex-column">
+        <h6 class="card-title mb-1">{{ p.name }}</h6>
 
-      <h6 class="card-title mb-1">{{ p.name }}</h6>
-
-      {% if rating_map.get(p.id) %}
-        <div class="small text-muted mb-1">
-          ⭐ {{ rating_map[p.id].avg }} / 5
-          ({{ rating_map[p.id].count }})
+        {% if rating_map.get(p.id) %}
+        <div class="small mb-1">
+          <span class="text-warning">
+            {% for i in range(rating_map[p.id].avg|int) %}⭐{% endfor %}
+            {% for i in range(5 - (rating_map[p.id].avg|int)) %}☆{% endfor %}
+          </span>
+          <span class="text-muted">
+            {{ rating_map[p.id].avg }} ({{ rating_map[p.id].count }})
+          </span>
         </div>
-      {% endif %}
-
-      <p class="mb-2">
-        {% if p.final_price < p.price %}
-          <span class="fw-bold fs-6 text-success">
-            ₹{{ p.final_price }}
-          </span>
-          <del class="text-muted ms-2">₹{{ p.price }}</del>
-        {% else %}
-          <span class="fw-bold fs-6">
-            ₹{{ p.price }}
-          </span>
         {% endif %}
-      </p>
 
-      <a href="{{ url_for('main.product_detail', slug=p.slug) }}"
-         class="btn btn-outline-primary mt-auto w-100">
-        View Product
-      </a>
+        <p class="mb-2">
+          {% if p.final_price < p.price %}
+            <span class="fw-bold text-success fs-6">
+              ₹{{ p.final_price }}
+            </span>
+            <del class="text-muted ms-2">₹{{ p.price }}</del>
+          {% else %}
+            <span class="fw-bold fs-6">
+              ₹{{ p.price }}
+            </span>
+          {% endif %}
+        </p>
+
+        <a href="{{ url_for('main.product_detail', slug=p.slug) }}"
+           class="btn btn-outline-primary mt-auto w-100">
+          View Product
+        </a>
+
+      </div>
 
     </div>
 
   </div>
-
-</div>
-{% endfor %}
+  {% endfor %}
 
 </div>
 {% else %}
@@ -127,12 +130,31 @@
 </div>
 {% endif %}
 
+<!-- ================= STYLES ================= -->
 <style>
 .product-card:hover {
   transform: translateY(-6px);
   transition: 0.2s ease;
 }
-.badge { font-size: 0.75rem; }
+
+.badge {
+  font-size: 0.75rem;
+}
+
+/* Mobile tuning */
+@media (max-width: 576px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
+}
 </style>
 
 {% endblock %}
