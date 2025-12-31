@@ -185,54 +185,6 @@ def product_list():
     )
 
 
-# @main_bp.route("/category/<slug>")
-# def category_products(slug):
-#     category = Category.query.filter_by(
-#         slug=slug,
-#         is_active=True
-#     ).first_or_404()
-
-#     products = (
-#         Product.query
-#         .filter_by(
-#             category_id=category.id,
-#             is_active=True
-#         )
-#         .order_by(Product.created_at.desc())
-#         .all()
-#     )
-
-#     # ⭐ Rating summary (avg + count) for all products
-#     ratings = (
-#         db.session.query(
-#             ProductReview.product_id,
-#             func.avg(ProductReview.rating).label("avg_rating"),
-#             func.count(ProductReview.id).label("total_reviews")
-#         )
-#         .filter(ProductReview.is_approved == True)
-#         .group_by(ProductReview.product_id)
-#         .all()
-#     )
-
-#     rating_map = {
-#         r.product_id: {
-#             "avg": round(float(r.avg_rating), 1),
-#             "count": r.total_reviews
-#         }
-#         for r in ratings
-#     }
-
-#     return render_template(
-#         "store/category.html",
-#         category=category,
-#         products=products,
-#         rating_map=rating_map
-#     )
-
-
-
-from sqlalchemy import or_, func
-
 @main_bp.route("/category/<slug>")
 def category_products(slug):
     q = request.args.get("q", "").strip()
