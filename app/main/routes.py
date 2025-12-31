@@ -823,22 +823,6 @@ def toggle_wishlist(product_id):
 
     return redirect(request.referrer or url_for("main.home"))
 
-# @main_bp.route("/wishlist")
-# @login_required
-# def wishlist():
-
-#     items = (
-#         Wishlist.query
-#         .filter_by(user_id=current_user.id)
-#         .order_by(Wishlist.created_at.desc())
-#         .all()
-#     )
-
-#     return render_template(
-#         "store/wishlist.html",
-#         items=items
-#     )
-
 
 @main_bp.route("/wishlist")
 @login_required
