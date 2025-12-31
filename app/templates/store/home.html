@@ -4,164 +4,134 @@
 
 {% block content %}
 
-<!-- ================= HERO SECTION ================= -->
-<div class="bg-dark text-white p-4 p-md-5 rounded mb-4 mb-md-5">
-  <div class="row align-items-center">
-    <div class="col-lg-8">
-      <h1 class="display-5 fw-bold">Welcome to My Store</h1>
-      <p class="lead mt-3">
-        Shop premium sarees, t-shirts and lifestyle products at best prices.
-      </p>
-      <a href="{{ url_for('main.products') }}"
-         class="btn btn-primary btn-lg mt-3">
-        🛍 Shop Now
-      </a>
-    </div>
-  </div>
-</div>
+<div class="container my-4">
 
-<!-- ================= MAIN CONTENT ================= -->
-<div class="row">
-
-  <!-- ================= LEFT SIDEBAR (CATEGORIES) ================= -->
-  <div class="col-lg-3 mb-4">
-
-    <div class="card shadow-sm">
-
-      <!-- Header with toggle for mobile -->
-      <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-        Categories
-        <button class="btn btn-sm btn-outline-secondary d-lg-none"
-                data-bs-toggle="collapse"
-                data-bs-target="#categoryList">
-          ☰
-        </button>
-      </div>
-
-      <!-- Collapsible category list -->
-      <div class="collapse d-lg-block" id="categoryList">
-        {% if categories %}
-        <ul class="list-group list-group-flush">
-          {% for c in categories %}
-          <li class="list-group-item">
-            <a href="{{ url_for('main.category_products', slug=c.slug) }}"
-               class="text-decoration-none text-dark d-block">
-              {{ c.name }}
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-        {% else %}
-        <div class="card-body text-muted">
-          No categories available
-        </div>
-        {% endif %}
-      </div>
-
-    </div>
-
+  <!-- ================= HEADER ================= -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Latest Products</h3>
+    <a href="{{ url_for('main.products') }}"
+       class="btn btn-outline-secondary btn-sm">
+      View All Products
+    </a>
   </div>
 
-  <!-- ================= RIGHT CONTENT (PRODUCTS) ================= -->
-  <div class="col-lg-9">
+  {% if products %}
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="mb-0">Latest Products</h3>
-      <a href="{{ url_for('main.products') }}"
-         class="btn btn-outline-secondary btn-sm">
-        View All
-      </a>
-    </div>
+  <!-- ================= SLIDER ================= -->
+  <div class="slider-wrapper">
 
-    {% if products %}
-    <div class="row">
+    <!-- LEFT -->
+    <button class="slider-btn left" onclick="slideLeft()">&#8249;</button>
+
+    <!-- TRACK -->
+    <div class="slider-track" id="productSlider">
 
       {% for p in products %}
-      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
+      <div class="slider-item">
 
-        <div class="card h-100 shadow-sm product-card">
 
-          <!-- IMAGE -->
-          {% if p.primary_image %}
-            <img src="{{ url_for('static', filename=p.primary_image) }}"
-                 class="card-img-top img-fluid"
-                 style="aspect-ratio: 3 / 4; object-fit: cover;"
-                 alt="{{ p.name }}">
-          {% else %}
-            <div class="bg-light d-flex align-items-center justify-content-center"
-                 style="aspect-ratio: 3 / 4;">
-              <span class="text-muted">No Image</span>
-            </div>
-          {% endif %}
 
-          <!-- BODY -->
-          <div class="card-body d-flex flex-column">
-
-            <h6 class="card-title mb-1">{{ p.name }}</h6>
-
-            {% if rating_map.get(p.id) %}
-            <div class="small text-muted mb-1">
-              ⭐ {{ rating_map[p.id].avg }} ({{ rating_map[p.id].count }})
-            </div>
-            {% endif %}
-
-            <p class="mb-2">
-              {% if p.final_price < p.price %}
-                <span class="fw-bold text-success">
-                  ₹{{ p.final_price }}
-                </span>
-                <del class="text-muted ms-2">₹{{ p.price }}</del>
-              {% else %}
-                <span class="fw-bold">
-                  ₹{{ p.price }}
-                </span>
-              {% endif %}
-            </p>
-
-            <a href="{{ url_for('main.product_detail', slug=p.slug) }}"
-               class="btn btn-outline-primary mt-auto w-100">
-              View Product
-            </a>
-
-          </div>
-
-        </div>
+        {% include "store/_product_card.html" %}
 
       </div>
       {% endfor %}
 
     </div>
-    {% else %}
-      <div class="alert alert-info">
-        No products available.
-      </div>
-    {% endif %}
+
+    <!-- RIGHT -->
+    <button class="slider-btn right" onclick="slideRight()">&#8250;</button>
 
   </div>
+
+  {% else %}
+    <div class="alert alert-info">No products available.</div>
+  {% endif %}
 
 </div>
 
 <!-- ================= STYLES ================= -->
 <style>
+/* Slider wrapper */
+.slider-wrapper {
+  position: relative;
+}
+
+/* Track */
+.slider-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* EXACTLY 4 ITEMS */
+.slider-item {
+  flex: 0 0 calc((100% - 48px) / 4); /* 3 gaps × 16px */
+}
+
+/* Buttons */
+.slider-btn {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  font-size: 28px;
+  padding: 6px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.slider-btn.left { left: -14px; }
+.slider-btn.right { right: -14px; }
+
+/* Hover */
 .product-card:hover {
   transform: translateY(-6px);
   transition: 0.2s ease;
 }
 
-/* Mobile typography tuning */
+/* Tablet → 2 cards */
+@media (max-width: 992px) {
+  .slider-item {
+    flex: 0 0 calc((100% - 16px) / 2);
+  }
+}
+
+/* Mobile → swipe */
 @media (max-width: 576px) {
-  h1.display-5 {
-    font-size: 2rem;
+  .slider-item {
+    flex: 0 0 80%;
   }
-
-  .card-title {
-    font-size: 0.95rem;
-  }
-
-  .btn {
-    font-size: 0.85rem;
+  .slider-btn {
+    display: none;
   }
 }
 </style>
+
+<!-- ================= JS ================= -->
+<script>
+const slider = document.getElementById("productSlider");
+
+function getCardWidth() {
+  const card = slider.querySelector(".slider-item");
+  const gap = 16; // must match CSS gap
+  return card.offsetWidth + gap;
+}
+
+function slideLeft() {
+  slider.scrollBy({ left: -getCardWidth(), behavior: "smooth" });
+}
+
+function slideRight() {
+  slider.scrollBy({ left: getCardWidth(), behavior: "smooth" });
+}
+</script>
 
 {% endblock %}

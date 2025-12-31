@@ -67,11 +67,77 @@ def order_detail(order_id):
     )
 
 
+# @main_bp.route("/")
+# def home():
+#     q = request.args.get("q", "").strip()
+
+#     products_query = (
+#         Product.query
+#         .join(Category)
+#         .filter(
+#             Product.is_active == True,
+#             Category.is_active == True
+#         )
+#     )
+#     print(products_query.count())
+
+#     # 🔍 SEARCH LOGIC
+#     if q:
+#         products_query = products_query.filter(
+#             or_(
+#                 Product.name.ilike(f"%{q}%"),
+#                 Category.name.ilike(f"%{q}%")
+#             )
+#         )
+#     products = (
+#         products_query
+#         .order_by(Product.created_at.desc())
+#         .limit(8)
+#         .all()
+#     )
+
+#     # ⭐ Rating summary (avg + count)
+#     ratings = (
+#         db.session.query(
+#             ProductReview.product_id,
+#             func.avg(ProductReview.rating).label("avg_rating"),
+#             func.count(ProductReview.id).label("total_reviews")
+#         )
+#         .filter(ProductReview.is_approved == True)
+#         .group_by(ProductReview.product_id)
+#         .all()
+#     )
+
+#     rating_map = {
+#         r.product_id: {
+#             "avg": round(float(r.avg_rating), 1),
+#             "count": r.total_reviews
+#         }
+#         for r in ratings
+#     }
+
+
+#     return render_template(
+#         "store/home.html",
+#         products=products,
+#         rating_map=rating_map,
+#         search_query=q
+#     )
+
+
+from flask_login import current_user
+from flask import redirect, url_for
+
 @main_bp.route("/")
 def home():
-    q = request.args.get("q", "").strip()
 
-    categories = Category.query.filter_by(is_active=True).all()
+    # 🔐 Redirect admin users to admin dashboard
+    if current_user.is_authenticated:
+        if getattr(current_user, "role", None) == "admin":
+            return redirect(url_for("admin.dashboard"))
+
+
+    q = request.args.get("q", "").strip()
 
     products_query = (
         Product.query
@@ -82,7 +148,7 @@ def home():
         )
     )
 
-    # 🔍 SEARCH LOGIC
+    # 🔍 SEARCH
     if q:
         products_query = products_query.filter(
             or_(
@@ -98,7 +164,7 @@ def home():
         .all()
     )
 
-    # ⭐ Rating summary (avg + count)
+    # ⭐ Rating summary
     ratings = (
         db.session.query(
             ProductReview.product_id,
@@ -120,7 +186,6 @@ def home():
 
     return render_template(
         "store/home.html",
-        categories=categories,
         products=products,
         rating_map=rating_map,
         search_query=q
