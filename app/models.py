@@ -2,7 +2,8 @@ from flask_login import UserMixin
 from app import db, bcrypt
 from datetime import datetime
 from sqlalchemy.sql import func
-
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
 
 ALLOWED_STATUS_TRANSITIONS = {
     "PLACED": ["CONFIRMED", "CANCELLED"],
@@ -34,6 +35,7 @@ ORDER_STATUSES = [
     ORDER_STATUS_RETURNED,
 ]
 
+
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
@@ -51,10 +53,28 @@ class User(db.Model, UserMixin):
 
     def check_password(self, raw_password):
         return bcrypt.check_password_hash(self.password, raw_password)
-    
+
     @property
     def is_admin(self):
         return self.role == "admin"
+
+    # ==============================
+    # 🔐 PASSWORD RESET TOKENS
+    # ==============================
+
+    def get_reset_token(self, expires_sec=1800):
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        return s.dumps({"user_id": self.id})
+
+    @staticmethod
+    def verify_reset_token(token, max_age=1800):
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token, max_age=max_age)
+            return User.query.get(data["user_id"])
+        except Exception:
+            return None
+
 
 
 class Category(db.Model):

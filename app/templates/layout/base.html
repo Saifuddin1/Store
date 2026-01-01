@@ -66,104 +66,21 @@
     <div class="collapse navbar-collapse">
 
       <ul class="navbar-nav ms-auto">
-
-        {% if current_user.is_authenticated %}
-
-          {% if current_user.is_admin %}
-            <!-- 🔐 ADMIN NAVBAR -->
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('admin.dashboard') }}">
-                📊 Dashboard
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('admin.analytics_dashboard') }}">
-                📈 Analytics
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('admin.orders') }}">
-                📦 Orders
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('admin.products') }}">
-                🛒 Products
-              </a>
-            </li>
-
-          {% else %}
-            <!-- 👤 CUSTOMER NAVBAR -->
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('main.home') }}">
-                Home
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('main.orders') }}">
-                My Orders
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('main.dashboard') }}">
-                Dashboard
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link"
-                 href="{{ url_for('main.cart_view') }}">
-                Cart
-              </a>
-            </li>
-          {% endif %}
-
-          <li class="nav-item">
-            <a class="nav-link"
-               href="{{ url_for('auth.logout') }}">
-              Logout
-            </a>
-          </li>
-
-        {% else %}
-          <!-- 🚪 GUEST -->
-          <li class="nav-item">
-            <a class="nav-link"
-               href="{{ url_for('auth.login') }}">
-              Login
-            </a>
-          </li>
-        {% endif %}
-
+        <!-- 🚪 GUEST -->
+        <li class="nav-item">
+          <a class="nav-link"
+              href="{{ url_for('auth.login') }}">
+            Login
+          </a>
+        </li>
       </ul>
-
     </div>
   </div>
 </nav>
 
 
-<!-- FLASH MESSAGES -->
-<div class="container mt-3">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible fade show">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
-  {% endwith %}
-</div>
+{% include "layout/flash_messages.html" %}
+
 
 <!-- MAIN CONTENT -->
 <div class="container my-4">

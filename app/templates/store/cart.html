@@ -147,14 +147,48 @@
 
   </div>
 
-  {% else %}
-  <div class="alert alert-info text-center py-4">
-    <h5>Your cart is empty</h5>
-    <a href="{{ url_for('main.home') }}" class="btn btn-outline-primary">
-      Start Shopping
+{% else %}
+<div class="d-flex justify-content-center py-5">
+
+  <div class="text-center px-3"
+       style="max-width:420px;">
+
+    <!-- Illustration wrapper -->
+    <div class="mb-4">
+      <img
+        src="{{ url_for('static', filename='images/empty_cart.png') }}"
+        alt="Empty Cart"
+        style="width:220px;opacity:0.95;"
+      >
+    </div>
+
+    <!-- Headline -->
+    <h4 class="fw-bold mb-2">
+      Your cart is empty
+    </h4>
+
+    <!-- Sub text -->
+    <p class="text-muted mb-4">
+      Add items to your cart and they’ll appear here.
+    </p>
+
+    <!-- Primary CTA -->
+    <a href="{{ url_for('main.home') }}"
+       class="btn btn-primary btn-lg px-4 mb-3">
+      🛍️ Start Shopping
     </a>
+
+    <!-- Secondary hint -->
+    <div class="text-muted small">
+      Free delivery on orders above ₹500
+    </div>
+
   </div>
-  {% endif %}
+
+</div>
+{% endif %}
+
+
 
 </div>
 

@@ -1,0 +1,38 @@
+<!-- FLASH TOASTS -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index:1080;">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+
+      {% set icon_map = {
+        'success': 'bi-check-circle-fill',
+        'danger': 'bi-x-circle-fill',
+        'warning': 'bi-exclamation-triangle-fill',
+        'info': 'bi-info-circle-fill'
+      } %}
+
+      <div class="toast align-items-center text-bg-{{ category }} border-0 mb-2 show shadow-sm"
+           role="alert"
+           aria-live="assertive"
+           aria-atomic="true">
+
+        <div class="d-flex">
+
+          <div class="toast-body d-flex align-items-center gap-2">
+            <i class="bi {{ icon_map.get(category, 'bi-info-circle-fill') }}"></i>
+            <span>{{ message }}</span>
+          </div>
+
+          <button type="button"
+                  class="btn-close btn-close-white me-2 m-auto"
+                  data-bs-dismiss="toast"
+                  aria-label="Close">
+          </button>
+
+        </div>
+      </div>
+
+    {% endfor %}
+  {% endwith %}
+
+</div>

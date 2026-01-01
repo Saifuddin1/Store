@@ -26,13 +26,11 @@ from app import db
 from slugify import slugify
 import os
 from werkzeug.utils import secure_filename
-from app.utils.email import send_email
+from app.utils.email import send_order_cancel_email, send_stock_available_email
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from sqlalchemy.orm.attributes import flag_modified
 import json
-
-
 
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -193,36 +191,6 @@ def add_product():
         product=None,
         categories=categories,
     )
-
-
-def send_stock_available_email(user_email, product):
-    subject = f"🎉 {product.name} is back in stock!"
-
-    body = f"""
-        Hi 👋
-
-        Good news!
-
-        The product you were waiting for is back in stock:
-
-        🛍 {product.name}
-        💰 Price: ₹{product.final_price}
-
-        👉 Visit now:
-        http://yourdomain.com/product/{product.slug}
-        http://127.0.0.1:5000/product/airplane
-
-        Hurry! Stock may run out again.
-
-        – My Store
-    """
-
-    send_email(
-        subject=subject,
-        recipients=[user_email],
-        body=body
-    )
-
 
 
 @admin_bp.route("/products/edit/<int:product_id>", methods=["GET", "POST"])
@@ -430,65 +398,6 @@ def order_detail(order_id):
     )
 
 
-def send_order_cancel_email(order, reason):
-    subject = f"Order #{order.id} Cancelled"
-    recipients = [order.user.email]
-
-    body = f"""
-    Hello {order.user.email},
-
-    Your order #{order.id} has been cancelled by the store.
-
-    Reason:
-    {reason}
-
-    If you have questions, please contact support.
-
-    Regards,
-    My Store
-    """
-
-    send_email(subject, recipients, body)
-
-
-
-
-# @admin_bp.route("/orders/<int:order_id>/status", methods=["POST"])
-# @login_required
-# @admin_required
-# def update_order_status(order_id):
-#     order = Order.query.get_or_404(order_id)
-
-#     new_status = request.form.get("status")
-#     remark = request.form.get("remark")
-
-#     allowed = ALLOWED_STATUS_TRANSITIONS.get(order.status, [])
-
-#     if new_status not in allowed:
-#         flash("Invalid status transition", "danger")
-#         return redirect(url_for("admin.order_detail", order_id=order.id))
-
-#     history = OrderStatusHistory(
-#         order_id=order.id,
-#         old_status=order.status,
-#         new_status=new_status,
-#         changed_by=current_user.id,
-#         remark=remark
-#     )
-
-#     order.status = new_status
-
-#     db.session.add(history)
-#     db.session.commit()
-
-#     # 🔔 Send cancellation email
-#     if new_status == "CANCELLED":
-#         send_order_cancel_email(order, remark)
-
-#     flash(f"Order marked as {new_status}", "success")
-#     return redirect(url_for("admin.order_detail", order_id=order.id))
-
-
 @admin_bp.route("/orders/<int:order_id>/status", methods=["POST"])
 @login_required
 @admin_required
@@ -537,7 +446,6 @@ def update_order_status(order_id):
         flash(str(e), "danger")
 
     return redirect(url_for("admin.order_detail", order_id=order.id))
-
 
 
 @admin_bp.route("/analytics")
@@ -614,9 +522,7 @@ def analytics_orders_by_status():
 @login_required
 @admin_required
 def analytics_orders_timeseries():
-    """
-    Line chart - last 30 days orders count (daily)
-    """
+
     now = datetime.utcnow()
     start = now - timedelta(days=30)
 
@@ -641,9 +547,7 @@ def analytics_orders_timeseries():
 @login_required
 @admin_required
 def analytics_revenue_timeseries():
-    """
-    Line chart - last 30 days revenue sum (daily)
-    """
+
     now = datetime.utcnow()
     start = now - timedelta(days=30)
 
@@ -668,9 +572,7 @@ def analytics_revenue_timeseries():
 @login_required
 @admin_required
 def analytics_top_products():
-    """
-    Bar chart - Top products by qty (last 30 days)
-    """
+
     now = datetime.utcnow()
     start = now - timedelta(days=30)
 
