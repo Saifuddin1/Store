@@ -5,6 +5,47 @@
 {% block content %}
 
 <div class="container my-4">
+<!-- ======================== BANNER SECTION ======================= -->
+<section class="banner-section mb-5">
+  <div class="container">
+    <div class="row align-items-center banner-box shadow-sm rounded-4 overflow-hidden">
+
+      <!-- LEFT IMAGE -->
+      <div class="col-md-6 p-0">
+        <img src="{{ url_for('static', filename='images/banner_img.jpg') }}"
+             class="banner-img"
+             alt="Saree Collection">
+      </div>
+
+      <!-- RIGHT TEXT -->
+      <div class="col-md-6 p-5">
+        <span class="banner-badge">New Collection</span>
+
+        <h2 class="banner-title mt-3">
+          Elegant Sarees <br>
+          <span>Everyday Fashion</span>
+        </h2>
+
+        <p class="banner-sub mt-3">
+          Handpicked sarees, stylish t-shirts, and premium clothing
+          crafted for comfort and everyday elegance.
+        </p>
+
+        <div class="mt-4">
+          
+          <a href="{{ url_for('main.products') }}" class="btn btn-outline-dark px-4">
+            Shop Now
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
 
   <!-- ================= HEADER ================= -->
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -28,11 +69,7 @@
 
       {% for p in products %}
       <div class="slider-item">
-
-
-
         {% include "store/_product_card.html" %}
-
       </div>
       {% endfor %}
 
@@ -113,6 +150,65 @@
     display: none;
   }
 }
+
+
+.banner-box {
+  background: #091b37;
+}
+
+/* Badge */
+.banner-badge {
+  display: inline-block;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.4px;
+  background: #6c63ff;
+  font-weight: 500;
+}
+
+/* Title */
+.banner-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.banner-title span {
+  color: #6c63ff;
+}
+
+/* Sub text */
+.banner-sub {
+  color: #555;
+  max-width: 420px;
+  font-size: 0.95rem;
+}
+
+
+/* Right text area background */
+.banner-box .col-md-6.p-5 {
+  background: linear-gradient(
+    135deg,
+    #f9f7ff 0%,
+    #ffffff 60%
+  );
+  position: relative;
+}
+
+.banner-box .col-md-6.p-5::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 4px;
+  height: 80%;
+  background: linear-gradient(180deg, #6c63ff, #ffb703);
+  border-radius: 4px;
+}
+
+
 </style>
 
 <!-- ================= JS ================= -->

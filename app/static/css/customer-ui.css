@@ -1,0 +1,189 @@
+/* =========================================================
+   BASE / LAYOUT
+========================================================= */
+
+body {
+  background-color: #f8f9fa;
+}
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* Bootstrap badge tweak */
+.navbar .badge {
+  font-size: 0.65rem;
+  padding: 4px 6px;
+}
+
+/* =========================================================
+   CART ICON
+========================================================= */
+
+.cart-link {
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+}
+
+.cart-link i {
+  line-height: 1;
+}
+
+.cart-link:hover {
+  color: #f8f9fa;
+}
+
+/* Cart badge */
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Cart label */
+.cart-text {
+  display: block;
+  font-size: 0.65rem;
+  line-height: 1;
+  margin-top: 0;
+  padding-top: 5px;
+  color: #ccc;
+}
+
+.cart-link:hover .cart-text {
+  color: #fff;
+}
+
+/* =========================================================
+   PROFILE ICON
+========================================================= */
+
+.profile-link {
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+}
+
+.profile-link i {
+  line-height: 1;
+}
+
+.profile-text {
+  display: block;
+  font-size: 0.65rem;
+  line-height: 1;
+  margin-top: 0;
+  padding-top: 5px;
+  color: #ccc;
+}
+
+.profile-link:hover .profile-text {
+  color: #fff;
+}
+
+/* =========================================================
+   PROFILE DROPDOWN
+========================================================= */
+
+.profile-dropdown .dropdown-item {
+  font-size: 0.9rem;
+  padding: 8px 14px;
+}
+
+.profile-dropdown .dropdown-item i {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.profile-dropdown .dropdown-item:hover i {
+  opacity: 1;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  background: #111;
+  color: #ccc;
+}
+
+footer a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #fff;
+}
+
+
+/* =========================================================
+   SEARCH BAR
+========================================================= */
+
+.search-form {
+  max-width: 420px;
+  width: 100%;
+}
+
+/* Input styling */
+.search-form .form-control {
+  border-right: none;
+}
+
+/* Button styling */
+.search-form .search-btn {
+  border-left: none;
+  background: transparent;
+}
+
+/* Icon base */
+.search-form .search-btn i {
+  font-size: 1rem;
+  color: #ffffff;               /* default icon color */
+  transition: color 0.2s ease;
+}
+
+/* Hover state */
+.search-form .search-btn:hover i {
+  color: #6c63ff;               /* brand accent */
+}
+
+/* Active / Focus / Pressed state */
+.search-form .search-btn:focus i,
+.search-form .search-btn:active i,
+.search-form .search-btn:focus-visible i {
+  color: #6c63ff;
+}
+
+/* Remove Bootstrap focus ring */
+.search-form .search-btn:focus,
+.search-form .search-btn:focus-visible {
+  box-shadow: none;
+}
+
+/* Optional: border highlight on interaction */
+.search-form .search-btn:hover,
+.search-form .search-btn:focus,
+.search-form .search-btn:active {
+  border-color: #9dec85;
+  background-color: #882891;
+}
