@@ -84,7 +84,11 @@ def forgot_password():
 
         # 🔐 Always same response (security)
         if user:
+            print("*" * 80)
+            print(user.email)
+            print("*" * 80)
             send_password_reset_email(user)
+        
 
         flash(
             "If an account exists, a password reset link has been sent.",
