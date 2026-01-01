@@ -1,75 +1,138 @@
 {% extends "layout/customer_base.html" %}
 
-{% block title %}My Account | My Store{% endblock %}
+{% block title %}My Account | {{ site_settings.site_name }}{% endblock %}
 
 {% block content %}
 
-<h2 class="mb-4">My Account</h2>
+<div class="container">
 
-<div class="row">
+  <!-- ================= HEADER ================= -->
+<div class="mb-4">
+  <h2 class="fw-bold mb-2">My Account</h2>
 
-  <!-- LEFT: ACCOUNT MENU -->
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-body">
+  <p class="mb-0">
+    <span class="text-muted me-1">Welcome back,</span>
+    <span class="badge bg-dark text-light fw-bold px-3 py-2 rounded-pill">
+      {{ current_user.email }}
+    </span>
+  </p>
+</div>
 
-        <h5 class="mb-3">Account</h5>
 
-        <div class="list-group list-group-flush">
-          <a href="{{ url_for('main.dashboard') }}"
-             class="list-group-item list-group-item-action active">
-            Dashboard
-          </a>
 
-          <a href="{{ url_for('main.orders') }}"
-             class="list-group-item list-group-item-action">
-            My Orders
-          </a>
+  <!-- ================= STATS ================= -->
+  <div class="row g-3 mb-4">
 
-          <a href="{{ url_for('main.cart_view') }}"
-             class="list-group-item list-group-item-action">
-            My Cart
-          </a>
-
-          <a href="{{ url_for('auth.logout') }}"
-             class="list-group-item list-group-item-action text-danger">
-            Logout
-          </a>
-        </div>
-
-      </div>
+<div class="col-md-4">
+  <div class="card h-100 shadow-sm border border-dark border-2 bg-light">
+    <div class="card-body text-center d-flex flex-column justify-content-center">
+      <small class="text-uppercase text-muted">Total Orders</small>
+      <h2 class="fw-bold text-dark mt-1 mb-0">
+        {{ total_orders }}
+      </h2>
     </div>
   </div>
+</div>
 
-  <!-- RIGHT: DASHBOARD CONTENT -->
-  <div class="col-md-8">
 
-    <div class="card shadow-sm">
-      <div class="card-body">
-
-        <h4 class="mb-3">
-          Welcome, {{ current_user.email }}
-        </h4>
-
-        <p class="text-muted">
-          From here you can view your orders, manage your cart, and continue shopping.
-        </p>
-
-        <div class="mt-4">
-          <a href="{{ url_for('main.products') }}"
-             class="btn btn-primary me-2">
-            Continue Shopping
-          </a>
-
-          <a href="{{ url_for('main.orders') }}"
-             class="btn btn-outline-secondary">
-            View My Orders
-          </a>
-        </div>
-
-      </div>
+<div class="col-md-4">
+  <div class="card h-100 shadow-sm border border-dark border-2 bg-light">
+    <div class="card-body text-center d-flex flex-column justify-content-center">
+      <small class="text-uppercase text-muted">Last Order</small>
+      <p class="fw-semibold mt-2 mb-0">
+        {% if last_order %}
+          {{ last_order.created_at.strftime("%d %b %Y") }}
+        {% else %}
+          —
+        {% endif %}
+      </p>
     </div>
+  </div>
+</div>
 
+
+<div class="col-md-4">
+  <div class="card h-100 shadow-sm border border-dark border-2 bg-light">
+    <div class="card-body text-center d-flex flex-column justify-content-center">
+      <small class="text-uppercase text-muted">Last Visit</small>
+      <p class="fw-semibold mt-2 mb-0">
+        {% if last_login %}
+          {{ last_login.strftime("%d %b %Y %I:%M %p") }}
+        {% else %}
+          —
+        {% endif %}
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <!-- ================= RECENT ORDERS ================= -->
+  <div class="card shadow-sm border border-dark border-2">
+    <div class="card-body">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-semibold mb-0">Recent Orders</h5>
+
+        <a href="{{ url_for('main.orders') }}"
+           class="btn btn-outline-secondary btn-sm">
+          View All
+        </a>
+      </div>
+
+      {% if recent_orders %}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead class="table-light">
+              <tr class="text-uppercase small text-muted">
+                <th>Order</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in recent_orders %}
+              <tr>
+                <td class="fw-semibold">#{{ order.id }}</td>
+                <td>{{ order.created_at.strftime("%d %b %Y") }}</td>
+                <td>
+                  {% if order.status == "PLACED" %}
+                    <span class="badge bg-secondary">
+                      {{ order.status }}
+                    </span>
+                  {% elif order.status == "SHIPPED" %}
+                    <span class="badge bg-warning text-dark">
+                      {{ order.status }}
+                    </span>
+                  {% elif order.status == "DELIVERED" %}
+                    <span class="badge bg-success">
+                      {{ order.status }}
+                    </span>
+                  {% else %}
+                    <span class="badge bg-dark">
+                      {{ order.status }}
+                    </span>
+                  {% endif %}
+                </td>
+                <td class="text-end fw-semibold">
+                  ₹{{ order.total_amount }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">
+          You haven’t placed any orders yet.
+        </p>
+      {% endif %}
+
+    </div>
   </div>
 
 </div>

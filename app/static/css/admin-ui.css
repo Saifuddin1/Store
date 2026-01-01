@@ -1,0 +1,94 @@
+/* =========================================================
+   ADMIN BASE
+========================================================= */
+
+body {
+  background-color: #f4f6f9;
+}
+
+/* =========================================================
+   TOP NAVBAR
+========================================================= */
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.navbar-dark .nav-link {
+  color: #ccc;
+}
+
+.navbar-dark .nav-link.active,
+.navbar-dark .nav-link:hover {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.admin-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+}
+
+.admin-sidebar h6 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6c757d;
+}
+
+/* Sidebar links */
+.admin-sidebar .list-group-item {
+  border: none;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-sidebar .list-group-item i {
+  font-size: 1.05rem;
+  color: #6c757d;
+}
+
+.admin-sidebar .list-group-item:hover {
+  background: #f1f3f5;
+}
+
+/* Active sidebar item */
+.admin-sidebar .list-group-item.active {
+  background: #6c63ff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.admin-sidebar .list-group-item.active i {
+  color: #fff;
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.admin-main {
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* =========================================================
+   LOGOUT LINK
+========================================================= */
+
+.admin-logout {
+  color: #ffc107 !important;
+}
+
+.admin-logout:hover {
+  color: #ffda6a !important;
+}

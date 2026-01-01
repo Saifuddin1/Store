@@ -187,3 +187,46 @@ footer a:hover {
   border-color: #9dec85;
   background-color: #882891;
 }
+
+
+/* ================= PROFILE HOVER DROPDOWN ================= */
+
+/* Enable hover dropdown on desktop */
+@media (min-width: 992px) {
+  .profile-hover:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0;
+  }
+}
+
+/* Optional: smooth feel */
+.profile-dropdown {
+  margin-top: 8px;
+}
+
+/* Prevent link click highlight */
+.profile-link {
+  cursor: pointer;
+}
+
+/* ================= PROFILE DROPDOWN FIX ================= */
+
+/* Keep dropdown inside viewport */
+.profile-dropdown {
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+  min-width: 220px;
+}
+
+/* Hover open (desktop only) */
+@media (min-width: 992px) {
+  .profile-hover:hover > .dropdown-menu {
+    display: block;
+  }
+}
+
+/* Prevent accidental overflow */
+.navbar {
+  overflow: visible;
+}

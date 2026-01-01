@@ -93,63 +93,61 @@
         {% if current_user.is_authenticated %}
 
           <!-- 👤 PROFILE -->
-          <li class="nav-item dropdown me-2">
-            <a class="nav-link dropdown-toggle profile-link text-center"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
+<!-- 👤 PROFILE -->
+<li class="nav-item dropdown me-2 profile-hover">
+  <a class="nav-link profile-link text-center p-0"
+     href="#"
+     role="button"
+     aria-expanded="false">
 
-              <i class="bi bi-person fs-5 d-block"></i>
-              <small class="profile-text">Profile</small>
-            </a>
+    <i class="bi bi-person fs-5 d-block"></i>
+    <small class="profile-text d-block">Profile</small>
 
-            <ul class="dropdown-menu dropdown-menu-end shadow profile-dropdown">
+  </a>
 
-              <li class="px-3 py-2">
-                <small class="text-muted d-block text-truncate">
-                  {{ current_user.email }}
-                </small>
-              </li>
+  <ul class="dropdown-menu dropdown-menu-end shadow profile-dropdown">
 
-              <li><hr class="dropdown-divider"></li>
+    <li class="px-3 py-2">
+      <small class="text-muted d-block text-truncate fw-semibold">
+        {{ current_user.email }}
+      </small>
+    </li>
 
-              <li>
-                <a class="dropdown-item d-flex align-items-center"
-                  href="{{ url_for('main.orders') }}">
-                  <i class="bi bi-box-seam me-2"></i>
-                  My Orders
-                </a>
-              </li>
+    <li><hr class="dropdown-divider"></li>
 
-              <li>
-                <a class="dropdown-item d-flex align-items-center"
-                  href="{{ url_for('main.dashboard') }}">
-                  <i class="bi bi-speedometer2 me-2"></i>
-                  Dashboard
-                </a>
-              </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center"
+         href="{{ url_for('main.orders') }}">
+        <i class="bi bi-box-seam me-2"></i> My Orders
+      </a>
+    </li>
 
-              <li>
-                <a class="dropdown-item d-flex align-items-center"
-                  href="{{ url_for('main.wishlist') }}">
-                  <i class="bi bi-heart me-2"></i>
-                  Wishlist
-                </a>
-              </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center"
+         href="{{ url_for('main.dashboard') }}">
+        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+      </a>
+    </li>
 
-              <li><hr class="dropdown-divider"></li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center"
+         href="{{ url_for('main.wishlist') }}">
+        <i class="bi bi-heart me-2"></i> Wishlist
+      </a>
+    </li>
 
-              <li>
-                <a class="dropdown-item d-flex align-items-center text-danger"
-                  href="{{ url_for('auth.logout') }}">
-                  <i class="bi bi-box-arrow-right me-2"></i>
-                  Logout
-                </a>
-              </li>
-            </ul>
+    <li><hr class="dropdown-divider"></li>
 
-          </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center text-danger"
+         href="{{ url_for('auth.logout') }}">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
+      </a>
+    </li>
+
+  </ul>
+</li>
+
         {% else %}
 
           <!-- LOGIN -->

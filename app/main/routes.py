@@ -25,7 +25,9 @@ from app import mail
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_, func
-
+from flask_login import current_user
+from flask import redirect, url_for
+from flask import session
 
 
 main_bp = Blueprint("main", __name__)
@@ -66,67 +68,6 @@ def order_detail(order_id):
         order=order
     )
 
-
-# @main_bp.route("/")
-# def home():
-#     q = request.args.get("q", "").strip()
-
-#     products_query = (
-#         Product.query
-#         .join(Category)
-#         .filter(
-#             Product.is_active == True,
-#             Category.is_active == True
-#         )
-#     )
-#     print(products_query.count())
-
-#     # 🔍 SEARCH LOGIC
-#     if q:
-#         products_query = products_query.filter(
-#             or_(
-#                 Product.name.ilike(f"%{q}%"),
-#                 Category.name.ilike(f"%{q}%")
-#             )
-#         )
-#     products = (
-#         products_query
-#         .order_by(Product.created_at.desc())
-#         .limit(8)
-#         .all()
-#     )
-
-#     # ⭐ Rating summary (avg + count)
-#     ratings = (
-#         db.session.query(
-#             ProductReview.product_id,
-#             func.avg(ProductReview.rating).label("avg_rating"),
-#             func.count(ProductReview.id).label("total_reviews")
-#         )
-#         .filter(ProductReview.is_approved == True)
-#         .group_by(ProductReview.product_id)
-#         .all()
-#     )
-
-#     rating_map = {
-#         r.product_id: {
-#             "avg": round(float(r.avg_rating), 1),
-#             "count": r.total_reviews
-#         }
-#         for r in ratings
-#     }
-
-
-#     return render_template(
-#         "store/home.html",
-#         products=products,
-#         rating_map=rating_map,
-#         search_query=q
-#     )
-
-
-from flask_login import current_user
-from flask import redirect, url_for
 
 @main_bp.route("/")
 def home():
@@ -402,12 +343,15 @@ def cart_view():
 
 @main_bp.route("/cart/update", methods=["POST"])
 def cart_update():
-    product_id = request.form.get("product_id")
+    product_id = request.form.get("product_id", type=int)
     qty = request.form.get("qty", type=int)
 
-    if product_id and qty:
-        update_cart(product_id, qty)
+    if product_id is None or qty is None:
+        return redirect(url_for("main.cart_view"))
 
+    update_cart(product_id, qty)
+
+    session.modified = True  # force save
     return redirect(url_for("main.cart_view"))
 
 
@@ -419,10 +363,6 @@ def cart_remove(product_id):
 
 
 def validate_cart_stock(items):
-    """
-    Validate stock before checkout.
-    items = cart_items()
-    """
 
     for item in items:
         product = Product.query.get(item["product_id"])
@@ -447,6 +387,7 @@ def validate_cart_stock(items):
 def checkout():
     items = cart_items()
     totals = cart_totals()
+
 
     if not items:
         flash("Your cart is empty", "warning")
@@ -517,7 +458,7 @@ def place_order():
         order = Order(
             user_id=current_user.id,
             address_id=address.id,
-            total_amount=totals["total_price"],
+            total_amount=totals["grand_total"],
             status="PLACED",
         )
         db.session.add(order)
