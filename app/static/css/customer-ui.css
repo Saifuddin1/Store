@@ -1,173 +1,25 @@
-/* =========================================================
-   BASE / LAYOUT
-========================================================= */
-
+/* ================= BASE ================= */
 body {
-  background-color: #f8f9fa;
+  background: #f8f9fa;
 }
 
-/* =========================================================
-   NAVBAR
-========================================================= */
-
-.navbar-brand {
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.navbar .badge {
-  font-size: 0.65rem;
-  padding: 4px 6px;
-}
-
-.navbar {
-  overflow: visible;
-}
-
-/* =========================================================
-   CART ICON
-========================================================= */
-
-.cart-link {
-  color: #fff;
-  line-height: 1;
-  text-align: center;
-}
-
-.cart-link i {
-  line-height: 1;
-}
-
-.cart-link:hover {
-  color: #f8f9fa;
-}
-
-.cart-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: #ff4d4f;
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 600;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-text {
-  display: block;
-  font-size: 0.65rem;
-  padding-top: 5px;
-  color: #ccc;
-}
-
-.cart-link:hover .cart-text {
-  color: #fff;
-}
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-.profile-link {
-  color: #fff;
-  text-align: center;
-  cursor: pointer;
-}
-
-.profile-text {
-  display: block;
-  font-size: 0.65rem;
-  padding-top: 5px;
-  color: #ccc;
-}
-
-.profile-link:hover .profile-text {
-  color: #fff;
-}
-
-.profile-dropdown {
-  margin-top: 8px;
-  right: 0 !important;
-  left: auto !important;
-  transform: none !important;
-  min-width: 220px;
-}
-
-.profile-dropdown .dropdown-item {
-  font-size: 0.9rem;
-  padding: 8px 14px;
-}
-
-@media (min-width: 992px) {
-  .profile-hover:hover > .dropdown-menu {
-    display: block;
-  }
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-footer {
-  background: #111;
-  color: #ccc;
-}
-
-footer a {
-  color: #ccc;
-  text-decoration: none;
-}
-
-footer a:hover {
-  color: #fff;
-}
-
-/* =========================================================
-   SEARCH BAR
-========================================================= */
-
-.search-form {
-  max-width: 420px;
-  width: 100%;
-}
-
-.search-form .form-control {
-  border-right: none;
-}
-
-.search-form .search-btn {
-  border-left: none;
-  background: transparent;
-}
-
-.search-form .search-btn i {
-  font-size: 1rem;
-  color: #fff;
-}
-
-.search-form .search-btn:hover i {
-  color: #6c63ff;
-}
-
-/* =========================================================
-   BANNER
-========================================================= */
-
+/* ================= BANNER ================= */
 .banner-box {
   background: #091b37;
 }
 
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .banner-badge {
+  background: #6c63ff;
   color: #fff;
-  font-size: 0.75rem;
   padding: 6px 12px;
   border-radius: 20px;
-  background: #6c63ff;
+  font-size: 0.75rem;
 }
 
 .banner-title {
@@ -181,29 +33,9 @@ footer a:hover {
 
 .banner-sub {
   color: #555;
-  max-width: 420px;
-  font-size: 0.95rem;
 }
 
-.banner-box .col-md-6.p-5 {
-  background: linear-gradient(135deg, #f9f7ff 0%, #ffffff 60%);
-  position: relative;
-}
-
-.banner-box .col-md-6.p-5::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 10%;
-  width: 4px;
-  height: 80%;
-  background: linear-gradient(180deg, #6c63ff, #ffb703);
-}
-
-/* =========================================================
-   SLIDER (DESKTOP / TABLET)
-========================================================= */
-
+/* ================= SLIDER (DESKTOP) ================= */
 .slider-wrapper {
   position: relative;
 }
@@ -212,12 +44,7 @@ footer a:hover {
   display: flex;
   gap: 16px;
   overflow-x: auto;
-  scroll-behavior: smooth;
   padding: 10px 0;
-}
-
-.slider-track::-webkit-scrollbar {
-  display: none;
 }
 
 .slider-item {
@@ -231,36 +58,30 @@ footer a:hover {
   background: #fff;
   border: none;
   font-size: 28px;
-  padding: 6px 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,.25);
   cursor: pointer;
-  z-index: 10;
 }
 
 .slider-btn.left { left: -14px; }
 .slider-btn.right { right: -14px; }
 
-.product-card:hover {
-  transform: translateY(-6px);
-  transition: 0.2s ease;
-}
-
-/* Tablet */
-@media (max-width: 992px) {
-  .slider-item {
-    flex: 0 0 calc((100% - 16px) / 2);
-  }
-}
-
-/* =========================================================
-   🔥 MOBILE VIEW (≤576px) — GRID, NO CAROUSEL
-========================================================= */
-
+/* ================= MOBILE (THIS IS THE FIX) ================= */
 @media (max-width: 576px) {
 
-  .container {
-    padding-left: 12px;
-    padding-right: 12px;
+  /* NO CAROUSEL */
+  .slider-track {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    overflow: visible;
+  }
+
+  .slider-item {
+    flex: unset;
+    width: 100%;
+  }
+
+  .slider-btn {
+    display: none;
   }
 
   .banner-box {
@@ -268,58 +89,11 @@ footer a:hover {
   }
 
   .banner-img {
-    width: 100%;
-    height: 240px;
-    object-fit: cover;
-  }
-
-  .banner-box .col-md-6.p-5 {
-    padding: 24px !important;
-    text-align: center;
-  }
-
-  .banner-box .col-md-6.p-5::before {
-    display: none;
-  }
-
-  /* 🔥 KILL CAROUSEL */
-  .slider-track {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    overflow: visible !important;
-    padding: 0 !important;
-  }
-
-  .slider-item {
-    width: 100%;
-    flex: unset !important;
-  }
-
-  .slider-btn {
-    display: none !important;
-  }
-
-  .product-card {
-    margin: 0;
-    border-radius: 12px;
+    height: 220px;
   }
 
   .product-card img {
     aspect-ratio: 3 / 4;
     object-fit: cover;
-  }
-
-  .product-card .card-body {
-    padding: 12px;
-  }
-
-  .product-card .card-title {
-    font-size: 0.95rem;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 }
