@@ -15,13 +15,11 @@ body {
   letter-spacing: 1px;
 }
 
-/* Bootstrap badge tweak */
 .navbar .badge {
   font-size: 0.65rem;
   padding: 4px 6px;
 }
 
-/* Prevent dropdown clipping */
 .navbar {
   overflow: visible;
 }
@@ -44,7 +42,6 @@ body {
   color: #f8f9fa;
 }
 
-/* Cart badge */
 .cart-badge {
   position: absolute;
   top: 2px;
@@ -59,15 +56,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
 }
 
-/* Cart label */
 .cart-text {
   display: block;
   font-size: 0.65rem;
-  line-height: 1;
-  margin-top: 0;
   padding-top: 5px;
   color: #ccc;
 }
@@ -77,25 +70,18 @@ body {
 }
 
 /* =========================================================
-   PROFILE ICON
+   PROFILE
 ========================================================= */
 
 .profile-link {
   color: #fff;
-  line-height: 1;
   text-align: center;
   cursor: pointer;
-}
-
-.profile-link i {
-  line-height: 1;
 }
 
 .profile-text {
   display: block;
   font-size: 0.65rem;
-  line-height: 1;
-  margin-top: 0;
   padding-top: 5px;
   color: #ccc;
 }
@@ -103,10 +89,6 @@ body {
 .profile-link:hover .profile-text {
   color: #fff;
 }
-
-/* =========================================================
-   PROFILE DROPDOWN
-========================================================= */
 
 .profile-dropdown {
   margin-top: 8px;
@@ -121,20 +103,9 @@ body {
   padding: 8px 14px;
 }
 
-.profile-dropdown .dropdown-item i {
-  font-size: 1rem;
-  opacity: 0.85;
-}
-
-.profile-dropdown .dropdown-item:hover i {
-  opacity: 1;
-}
-
-/* Hover dropdown (desktop only) */
 @media (min-width: 992px) {
   .profile-hover:hover > .dropdown-menu {
     display: block;
-    margin-top: 0;
   }
 }
 
@@ -165,143 +136,78 @@ footer a:hover {
   width: 100%;
 }
 
-/* Input styling */
 .search-form .form-control {
   border-right: none;
 }
 
-/* Button styling */
 .search-form .search-btn {
   border-left: none;
   background: transparent;
 }
 
-/* Icon */
 .search-form .search-btn i {
   font-size: 1rem;
-  color: #ffffff;
-  transition: color 0.2s ease;
+  color: #fff;
 }
 
-/* Hover / focus */
-.search-form .search-btn:hover i,
-.search-form .search-btn:focus i,
-.search-form .search-btn:active i,
-.search-form .search-btn:focus-visible i {
+.search-form .search-btn:hover i {
   color: #6c63ff;
 }
 
-/* Remove Bootstrap focus ring */
-.search-form .search-btn:focus,
-.search-form .search-btn:focus-visible {
-  box-shadow: none;
+/* =========================================================
+   BANNER
+========================================================= */
+
+.banner-box {
+  background: #091b37;
 }
 
-/* Optional border highlight */
-.search-form .search-btn:hover,
-.search-form .search-btn:focus,
-.search-form .search-btn:active {
-  border-color: #9dec85;
-  background-color: #882891;
+.banner-badge {
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #6c63ff;
+}
+
+.banner-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.banner-title span {
+  color: #6c63ff;
+}
+
+.banner-sub {
+  color: #555;
+  max-width: 420px;
+  font-size: 0.95rem;
+}
+
+.banner-box .col-md-6.p-5 {
+  background: linear-gradient(135deg, #f9f7ff 0%, #ffffff 60%);
+  position: relative;
+}
+
+.banner-box .col-md-6.p-5::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 4px;
+  height: 80%;
+  background: linear-gradient(180deg, #6c63ff, #ffb703);
 }
 
 /* =========================================================
-   MOBILE BANNER FIX (≤768px)
+   SLIDER (DESKTOP / TABLET)
 ========================================================= */
 
-@media (max-width: 768px) {
-
-  .banner-box {
-    flex-direction: column;
-  }
-
-  .banner-img {
-    width: 100%;
-    height: 240px;
-    object-fit: cover;
-  }
-
-  .banner-box .col-md-6.p-5 {
-    padding: 24px !important;
-    text-align: center;
-  }
-
-  .banner-badge {
-    margin: 0 auto;
-  }
-
-  .banner-title {
-    font-size: 1.5rem;
-  }
-
-  .banner-sub {
-    font-size: 0.9rem;
-    margin: 12px auto;
-  }
-
-  .banner-box .col-md-6.p-5::before {
-    display: none;
-  }
-}
-
-/* =========================================================
-   MOBILE UI (≤576px)
-========================================================= */
-
-@media (max-width: 576px) {
-
-  /* Slider */
-  .slider-track {
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px;
-  }
-
-  .slider-item {
-    flex: 0 0 85%;
-    scroll-snap-align: start;
-  }
-
-  /* Product card */
-  .product-card {
-    margin: 0 auto;
-    border-radius: 12px;
-  }
-
-  .product-card img {
-    aspect-ratio: 3 / 4;
-    max-height: 260px;
-    object-fit: cover;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-
-  .product-card .card-body {
-    padding: 12px;
-  }
-
-  .product-card .btn {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
-  .product-card .card-title {
-    font-size: 0.95rem;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-
-/* ================= SLIDER WRAPPER ================= */
 .slider-wrapper {
   position: relative;
 }
 
-/* ================= DESKTOP / TABLET SLIDER ================= */
 .slider-track {
   display: flex;
   gap: 16px;
@@ -314,12 +220,10 @@ footer a:hover {
   display: none;
 }
 
-/* 4 cards on desktop */
 .slider-item {
   flex: 0 0 calc((100% - 48px) / 4);
 }
 
-/* Slider buttons */
 .slider-btn {
   position: absolute;
   top: 45%;
@@ -336,13 +240,12 @@ footer a:hover {
 .slider-btn.left { left: -14px; }
 .slider-btn.right { right: -14px; }
 
-/* Hover effect */
 .product-card:hover {
   transform: translateY(-6px);
   transition: 0.2s ease;
 }
 
-/* ================= TABLET ================= */
+/* Tablet */
 @media (max-width: 992px) {
   .slider-item {
     flex: 0 0 calc((100% - 16px) / 2);
@@ -350,37 +253,73 @@ footer a:hover {
 }
 
 /* =========================================================
-   🔥 MOBILE VIEW (≤576px) — NO CAROUSEL
+   🔥 MOBILE VIEW (≤576px) — GRID, NO CAROUSEL
 ========================================================= */
+
 @media (max-width: 576px) {
 
-  /* Disable slider behavior */
-  .slider-track {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    overflow: visible;
-    padding: 0;
-  }
-
-  .slider-item {
-    flex: unset;
-    width: 100%;
-  }
-
-  /* Hide arrows */
-  .slider-btn {
-    display: none;
-  }
-
-  /* Use full width of screen */
   .container {
     padding-left: 12px;
     padding-right: 12px;
   }
 
-  /* Product card full width */
+  .banner-box {
+    flex-direction: column;
+  }
+
+  .banner-img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+  }
+
+  .banner-box .col-md-6.p-5 {
+    padding: 24px !important;
+    text-align: center;
+  }
+
+  .banner-box .col-md-6.p-5::before {
+    display: none;
+  }
+
+  /* 🔥 KILL CAROUSEL */
+  .slider-track {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .slider-item {
+    width: 100%;
+    flex: unset !important;
+  }
+
+  .slider-btn {
+    display: none !important;
+  }
+
   .product-card {
     margin: 0;
+    border-radius: 12px;
+  }
+
+  .product-card img {
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+  }
+
+  .product-card .card-body {
+    padding: 12px;
+  }
+
+  .product-card .card-title {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
