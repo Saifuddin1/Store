@@ -9,7 +9,6 @@
     <div class="card shadow-sm">
       <div class="card-body p-4">
 
-        <h3 class="text-center mb-4">Welcome Back</h3>
         <p class="text-center text-muted mb-4">
           Login to continue shopping
         </p>
@@ -48,20 +47,25 @@
 
         <hr class="my-4">
 
-        <p class="text-center mb-0">
-          New to My Store?
-          <a href="{{ url_for('auth.register') }}">
-            Create an account
-          </a>
-          <a href="{{ url_for('auth.forgot_password') }}"
-          class="small text-muted">
-          Forgot password?
-        </a>
-        </p>
+        <div class="text-center">
 
+          <p class="mb-2">
+            <span class="text-muted">New to My Store?</span>
+            <a href="{{ url_for('auth.register') }}"
+              class="fw-semibold text-decoration-none">
+              Create an account
+            </a>
+          </p>
+
+          <p class="mb-0">
+            <a href="{{ url_for('auth.forgot_password') }}"
+              class="text-decoration-none small">
+              Forgot your password?
+            </a>
+          </p>
+        </div>
       </div>
     </div>
-
   </div>
 </div>
 {% endblock %}

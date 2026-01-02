@@ -74,52 +74,55 @@ def register():
 
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
+    user = None
+
     if request.method == "POST":
         email = request.form.get("email")
+        password = request.form.get("password")
 
         user = User.query.filter_by(
             email=email,
             is_active=True
         ).first()
 
-        # 🔐 Always same response (security)
-        if user:
-            flash(
-                "If an account exists, a password reset link has been sent.",
-                "info"
-            )
-            send_password_reset_email(user)
-        else:
-            flash(
-                "User is not available in DB"
-            )
-        
-
-
-        return redirect(url_for("auth.login"))
-
-    return render_template("auth/forgot_password.html")
-
-
-@auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
-def reset_password(token):
-    user = User.verify_reset_token(token)
-
-    if not user:
-        flash("Invalid or expired password reset link.", "danger")
-        return redirect(url_for("auth.login"))
-
-    if request.method == "POST":
-        password = request.form.get("password")
-
-        if not password or len(password) < 6:
-            flash("Password must be at least 6 characters.", "danger")
+        if not user:
+            flash("No account found with this email.", "danger")
             return redirect(request.url)
 
-        user.set_password(password)
-        db.session.commit()
+        # ✅ If password submitted → reset
+        if password:
+            user.set_password(password)
+            db.session.commit()
 
-        flash("Password reset successful. Please login.", "success")
-        return redirect(url_for("auth.login"))
+            flash("Password reset successfully. Please login.", "success")
+            return redirect(url_for("auth.login"))
 
-    return render_template("auth/reset_password.html")
+    return render_template(
+        "auth/forgot_password.html",
+        user=user
+    )
+
+
+
+# @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
+# def reset_password(token):
+#     user = User.verify_reset_token(token)
+
+#     if not user:
+#         flash("Invalid or expired password reset link.", "danger")
+#         return redirect(url_for("auth.login"))
+
+#     if request.method == "POST":
+#         password = request.form.get("password")
+
+#         if not password or len(password) < 6:
+#             flash("Password must be at least 6 characters.", "danger")
+#             return redirect(request.url)
+
+#         user.set_password(password)
+#         db.session.commit()
+
+#         flash("Password reset successful. Please login.", "success")
+#         return redirect(url_for("auth.login"))
+
+#     return render_template("auth/reset_password.html")

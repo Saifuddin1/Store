@@ -58,23 +58,6 @@ class User(db.Model, UserMixin):
     def is_admin(self):
         return self.role == "admin"
 
-    # ==============================
-    # 🔐 PASSWORD RESET TOKENS
-    # ==============================
-
-    def get_reset_token(self, expires_sec=1800):
-        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        return s.dumps({"user_id": self.id})
-
-    @staticmethod
-    def verify_reset_token(token, max_age=1800):
-        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        try:
-            data = s.loads(token, max_age=max_age)
-            return User.query.get(data["user_id"])
-        except Exception:
-            return None
-
 
 
 class Category(db.Model):
