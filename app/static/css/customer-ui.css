@@ -75,14 +75,17 @@ body {
   object-fit: cover;
 }
 
+
 .product-card .card-title {
   font-size: 0.95rem;
   line-height: 1.25;
+  line-clamp: 2;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
+
 
 /* =========================================================
    MOBILE
