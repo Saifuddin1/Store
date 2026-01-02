@@ -1,13 +1,45 @@
-<div class="card product-card h-100 shadow-sm">
+<div class="card product-card h-100 shadow-sm position-relative">
 
-  <img src="{{ url_for('static', filename=p.primary_image) }}"
-       class="card-img-top"
-       alt="{{ p.name }}">
+  <!-- IMAGE -->
+  <div class="position-relative">
+    {% if p.primary_image %}
+      <img src="{{ url_for('static', filename=p.primary_image) }}"
+           class="card-img-top product-img"
+           alt="{{ p.name }}">
+    {% else %}
+      <div class="bg-light d-flex align-items-center justify-content-center product-img">
+        <span class="text-muted">No Image</span>
+      </div>
+    {% endif %}
 
+    <!-- STOCK BADGES -->
+    {% if p.stock_quantity <= 0 %}
+      <span class="badge bg-danger position-absolute top-50 start-50 translate-middle px-3 py-2">
+        Out of Stock
+      </span>
+    {% elif p.stock_quantity <= 2 %}
+      <span class="badge bg-danger position-absolute bottom-0 end-0 m-2">
+        Only {{ p.stock_quantity }} left
+      </span>
+    {% elif p.stock_quantity <= 5 %}
+      <span class="badge bg-warning text-dark position-absolute bottom-0 end-0 m-2">
+        Limited Stock
+      </span>
+    {% endif %}
+  </div>
+
+  <!-- BODY -->
   <div class="card-body d-flex flex-column">
-    <h6 class="card-title">{{ p.name }}</h6>
+    <h6 class="card-title mb-1">{{ p.name }}</h6>
 
-    <p class="fw-bold mb-2">₹{{ p.final_price }}</p>
+    <p class="mb-2 fw-bold">
+      {% if p.final_price < p.price %}
+        ₹{{ p.final_price }}
+        <del class="text-muted ms-2">₹{{ p.price }}</del>
+      {% else %}
+        ₹{{ p.price }}
+      {% endif %}
+    </p>
 
     <a href="{{ url_for('main.product_detail', slug=p.slug) }}"
        class="btn btn-outline-primary mt-auto w-100">

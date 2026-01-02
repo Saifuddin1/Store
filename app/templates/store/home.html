@@ -6,17 +6,19 @@
 
 <div class="container my-4">
 
-  <!-- ================= BANNER ================= -->
+  <!-- ======================== BANNER SECTION ======================= -->
   <section class="banner-section mb-5">
-    <div class="row banner-box shadow-sm rounded-4 overflow-hidden">
+    <div class="row align-items-center banner-box shadow-sm rounded-4 overflow-hidden">
 
+      <!-- LEFT IMAGE -->
       <div class="col-md-6 p-0">
         <img src="{{ url_for('static', filename='images/banner_img.jpg') }}"
              class="banner-img"
              alt="Saree Collection">
       </div>
 
-      <div class="col-md-6 p-5">
+      <!-- RIGHT TEXT -->
+      <div class="col-md-6 p-5 banner-right">
         <span class="banner-badge">New Collection</span>
 
         <h2 class="banner-title mt-3">
@@ -25,13 +27,16 @@
         </h2>
 
         <p class="banner-sub mt-3">
-          Handpicked sarees and premium clothing.
+          Handpicked sarees, stylish t-shirts, and premium clothing
+          crafted for comfort and everyday elegance.
         </p>
 
-        <a href="{{ url_for('main.products') }}"
-           class="btn btn-outline-dark mt-3">
-          Shop Now
-        </a>
+        <div class="mt-4">
+          <a href="{{ url_for('main.products') }}"
+             class="btn btn-outline-dark px-4">
+            Shop Now
+          </a>
+        </div>
       </div>
 
     </div>
@@ -47,45 +52,18 @@
   </div>
 
   {% if products %}
-
-  <!-- ================= PRODUCTS ================= -->
-  <div class="slider-wrapper">
-
-    <button class="slider-btn left" onclick="slideLeft()">&#8249;</button>
-
-    <div class="slider-track" id="productSlider">
+    <!-- ================= PRODUCT GRID ================= -->
+    <div class="row g-3">
       {% for p in products %}
-        <div class="slider-item">
+        <div class="col-6 col-md-4 col-lg-3">
           {% include "store/_product_card.html" %}
         </div>
       {% endfor %}
     </div>
-
-    <button class="slider-btn right" onclick="slideRight()">&#8250;</button>
-
-  </div>
-
   {% else %}
     <div class="alert alert-info">No products available.</div>
   {% endif %}
 
 </div>
-
-<script>
-const slider = document.getElementById("productSlider");
-
-function getCardWidth() {
-  const card = slider.querySelector(".slider-item");
-  return card ? card.offsetWidth + 16 : 0;
-}
-
-function slideLeft() {
-  slider.scrollBy({ left: -getCardWidth(), behavior: "smooth" });
-}
-
-function slideRight() {
-  slider.scrollBy({ left: getCardWidth(), behavior: "smooth" });
-}
-</script>
 
 {% endblock %}

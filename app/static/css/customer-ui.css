@@ -1,30 +1,38 @@
-/* ================= BASE ================= */
+/* =========================================================
+   BASE
+========================================================= */
 body {
-  background: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
-/* ================= BANNER ================= */
+/* =========================================================
+   BANNER
+========================================================= */
 .banner-box {
   background: #091b37;
 }
 
 .banner-img {
   width: 100%;
-  height: 100%;
+  min-height: 320px;
   object-fit: cover;
+  display: block;
 }
 
 .banner-badge {
-  background: #6c63ff;
+  display: inline-block;
   color: #fff;
+  font-size: 0.75rem;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  background: #6c63ff;
+  font-weight: 500;
 }
 
 .banner-title {
   font-size: 2rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .banner-title span {
@@ -33,67 +41,63 @@ body {
 
 .banner-sub {
   color: #555;
+  max-width: 420px;
+  font-size: 0.95rem;
 }
 
-/* ================= SLIDER (DESKTOP) ================= */
-.slider-wrapper {
+.banner-right {
+  background: linear-gradient(135deg, #f9f7ff 0%, #ffffff 60%);
   position: relative;
 }
 
-.slider-track {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding: 10px 0;
-}
-
-.slider-item {
-  flex: 0 0 calc((100% - 48px) / 4);
-}
-
-.slider-btn {
+.banner-right::before {
+  content: "";
   position: absolute;
-  top: 45%;
-  transform: translateY(-50%);
-  background: #fff;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
+  left: 0;
+  top: 10%;
+  width: 4px;
+  height: 80%;
+  background: linear-gradient(180deg, #6c63ff, #ffb703);
+  border-radius: 4px;
 }
 
-.slider-btn.left { left: -14px; }
-.slider-btn.right { right: -14px; }
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+.product-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-/* ================= MOBILE (THIS IS THE FIX) ================= */
+.product-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.product-card .card-title {
+  font-size: 0.95rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
 @media (max-width: 576px) {
 
-  /* NO CAROUSEL */
-  .slider-track {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    overflow: visible;
-  }
-
-  .slider-item {
-    flex: unset;
-    width: 100%;
-  }
-
-  .slider-btn {
-    display: none;
-  }
-
-  .banner-box {
-    flex-direction: column;
-  }
-
   .banner-img {
-    height: 220px;
+    min-height: 220px;
   }
 
-  .product-card img {
-    aspect-ratio: 3 / 4;
-    object-fit: cover;
+  .banner-right {
+    text-align: center;
+  }
+
+  .banner-right::before {
+    display: none;
   }
 }
