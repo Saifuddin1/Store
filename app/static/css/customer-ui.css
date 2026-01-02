@@ -79,3 +79,38 @@ body {
     text-align: center;
   }
 }
+
+/* ======================================================================================= */
+
+/* ================= PROFILE HOVER DROPDOWN (DESKTOP ONLY) ================= */
+@media (min-width: 992px) {
+
+  /* Show dropdown on hover */
+  .profile-hover:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0;
+  }
+
+  /* Prevent Bootstrap click glitch on hover */
+  .profile-hover > .dropdown-toggle {
+    pointer-events: none;
+  }
+}
+
+/* ================= PROFILE DROPDOWN VIEWPORT FIX ================= */
+@media (min-width: 992px) {
+
+  /* Ensure dropdown stays inside screen */
+  .profile-hover .dropdown-menu {
+    right: 0;
+    left: auto;
+    transform: translateX(0);
+    max-width: calc(100vw - 16px);
+    overflow-wrap: break-word;
+  }
+
+  /* Optional: prevent accidental horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+}

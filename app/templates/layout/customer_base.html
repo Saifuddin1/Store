@@ -13,6 +13,8 @@
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/customer-ui.css') }}">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/common_ui.css') }}">
 
   {% block extra_css %}{% endblock %}
 </head>
@@ -90,61 +92,60 @@
 
         {% if current_user.is_authenticated %}
 
-          <!-- 👤 PROFILE -->
-<!-- 👤 PROFILE -->
-<li class="nav-item dropdown me-2 profile-hover">
-  <a class="nav-link profile-link text-center p-0"
-     href="#"
-     role="button"
-     aria-expanded="false">
+        <!-- 👤 PROFILE -->
+        <li class="nav-item dropdown me-2 profile-hover">
+          <a class="nav-link profile-link text-center p-0"
+            href="#"
+            role="button"
+            aria-expanded="false">
 
-    <i class="bi bi-person fs-5 d-block"></i>
-    <small class="profile-text d-block">Profile</small>
+            <i class="bi bi-person fs-5 d-block"></i>
+            <small class="profile-text d-block">Profile</small>
 
-  </a>
+          </a>
 
-  <ul class="dropdown-menu dropdown-menu-end shadow profile-dropdown">
+          <ul class="dropdown-menu dropdown-menu-end shadow profile-dropdown">
 
-    <li class="px-3 py-2">
-      <small class="text-muted d-block text-truncate fw-semibold">
-        {{ current_user.email }}
-      </small>
-    </li>
+            <li class="px-3 py-2">
+              <small class="text-muted d-block text-truncate fw-semibold">
+                {{ current_user.email }}
+              </small>
+            </li>
 
-    <li><hr class="dropdown-divider"></li>
+            <li><hr class="dropdown-divider"></li>
 
-    <li>
-      <a class="dropdown-item d-flex align-items-center"
-         href="{{ url_for('main.orders') }}">
-        <i class="bi bi-box-seam me-2"></i> My Orders
-      </a>
-    </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center"
+                href="{{ url_for('main.orders') }}">
+                <i class="bi bi-box-seam me-2"></i> My Orders
+              </a>
+            </li>
 
-    <li>
-      <a class="dropdown-item d-flex align-items-center"
-         href="{{ url_for('main.dashboard') }}">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-      </a>
-    </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center"
+                href="{{ url_for('main.dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+              </a>
+            </li>
 
-    <li>
-      <a class="dropdown-item d-flex align-items-center"
-         href="{{ url_for('main.wishlist') }}">
-        <i class="bi bi-heart me-2"></i> Wishlist
-      </a>
-    </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center"
+                href="{{ url_for('main.wishlist') }}">
+                <i class="bi bi-heart me-2"></i> Wishlist
+              </a>
+            </li>
 
-    <li><hr class="dropdown-divider"></li>
+            <li><hr class="dropdown-divider"></li>
 
-    <li>
-      <a class="dropdown-item d-flex align-items-center text-danger"
-         href="{{ url_for('auth.logout') }}">
-        <i class="bi bi-box-arrow-right me-2"></i> Logout
-      </a>
-    </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center text-danger"
+                href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right me-2"></i> Logout
+              </a>
+            </li>
 
-  </ul>
-</li>
+          </ul>
+        </li>
 
         {% else %}
 
