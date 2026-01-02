@@ -7,7 +7,10 @@
 <div class="container">
 
   <!-- ================= HEADER ================= -->
-  <div class="mb-4">
+
+
+  {% if items %}
+    <div class="mb-4">
     <h2 class="fw-bold mb-1">🛒 Shopping Cart</h2>
     <p class="text-muted mb-0">Review your items before checkout</p>
   </div>
@@ -15,8 +18,6 @@
   <a href="{{ url_for('main.home') }}" class="btn btn-link p-0 mb-4">
     ← Continue Shopping
   </a>
-
-  {% if items %}
   <div class="row g-4">
 
     <!-- ================= ITEMS ================= -->
