@@ -21,6 +21,11 @@ body {
   padding: 4px 6px;
 }
 
+/* Prevent dropdown clipping */
+.navbar {
+  overflow: visible;
+}
+
 /* =========================================================
    CART ICON
 ========================================================= */
@@ -79,6 +84,7 @@ body {
   color: #fff;
   line-height: 1;
   text-align: center;
+  cursor: pointer;
 }
 
 .profile-link i {
@@ -102,6 +108,14 @@ body {
    PROFILE DROPDOWN
 ========================================================= */
 
+.profile-dropdown {
+  margin-top: 8px;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+  min-width: 220px;
+}
+
 .profile-dropdown .dropdown-item {
   font-size: 0.9rem;
   padding: 8px 14px;
@@ -114,6 +128,14 @@ body {
 
 .profile-dropdown .dropdown-item:hover i {
   opacity: 1;
+}
+
+/* Hover dropdown (desktop only) */
+@media (min-width: 992px) {
+  .profile-hover:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0;
+  }
 }
 
 /* =========================================================
@@ -133,7 +155,6 @@ footer a {
 footer a:hover {
   color: #fff;
 }
-
 
 /* =========================================================
    SEARCH BAR
@@ -155,19 +176,15 @@ footer a:hover {
   background: transparent;
 }
 
-/* Icon base */
+/* Icon */
 .search-form .search-btn i {
   font-size: 1rem;
-  color: #ffffff;               /* default icon color */
+  color: #ffffff;
   transition: color 0.2s ease;
 }
 
-/* Hover state */
-.search-form .search-btn:hover i {
-  color: #6c63ff;               /* brand accent */
-}
-
-/* Active / Focus / Pressed state */
+/* Hover / focus */
+.search-form .search-btn:hover i,
 .search-form .search-btn:focus i,
 .search-form .search-btn:active i,
 .search-form .search-btn:focus-visible i {
@@ -180,7 +197,7 @@ footer a:hover {
   box-shadow: none;
 }
 
-/* Optional: border highlight on interaction */
+/* Optional border highlight */
 .search-form .search-btn:hover,
 .search-form .search-btn:focus,
 .search-form .search-btn:active {
@@ -188,45 +205,92 @@ footer a:hover {
   background-color: #882891;
 }
 
+/* =========================================================
+   MOBILE BANNER FIX (≤768px)
+========================================================= */
 
-/* ================= PROFILE HOVER DROPDOWN ================= */
+@media (max-width: 768px) {
 
-/* Enable hover dropdown on desktop */
-@media (min-width: 992px) {
-  .profile-hover:hover > .dropdown-menu {
-    display: block;
-    margin-top: 0;
+  .banner-box {
+    flex-direction: column;
+  }
+
+  .banner-img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+  }
+
+  .banner-box .col-md-6.p-5 {
+    padding: 24px !important;
+    text-align: center;
+  }
+
+  .banner-badge {
+    margin: 0 auto;
+  }
+
+  .banner-title {
+    font-size: 1.5rem;
+  }
+
+  .banner-sub {
+    font-size: 0.9rem;
+    margin: 12px auto;
+  }
+
+  .banner-box .col-md-6.p-5::before {
+    display: none;
   }
 }
 
-/* Optional: smooth feel */
-.profile-dropdown {
-  margin-top: 8px;
-}
+/* =========================================================
+   MOBILE UI (≤576px)
+========================================================= */
 
-/* Prevent link click highlight */
-.profile-link {
-  cursor: pointer;
-}
+@media (max-width: 576px) {
 
-/* ================= PROFILE DROPDOWN FIX ================= */
-
-/* Keep dropdown inside viewport */
-.profile-dropdown {
-  right: 0 !important;
-  left: auto !important;
-  transform: none !important;
-  min-width: 220px;
-}
-
-/* Hover open (desktop only) */
-@media (min-width: 992px) {
-  .profile-hover:hover > .dropdown-menu {
-    display: block;
+  /* Slider */
+  .slider-track {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
   }
-}
 
-/* Prevent accidental overflow */
-.navbar {
-  overflow: visible;
+  .slider-item {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+
+  /* Product card */
+  .product-card {
+    margin: 0 auto;
+    border-radius: 12px;
+  }
+
+  .product-card img {
+    aspect-ratio: 3 / 4;
+    max-height: 260px;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .product-card .card-body {
+    padding: 12px;
+  }
+
+  .product-card .btn {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .product-card .card-title {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
