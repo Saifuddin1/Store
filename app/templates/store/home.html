@@ -4,66 +4,53 @@
 
 {% block content %}
 
-<div class="container-fluid my-4 px-2 px-sm-3">
+<!-- ================= BANNER ================= -->
+<section class="banner-section mb-4">
+  <div class="row banner-box rounded-4 overflow-hidden">
 
-  <!-- ======================== BANNER SECTION ======================= -->
-  <section class="banner-section mb-5">
-    <div class="row align-items-center banner-box shadow-sm rounded-4 overflow-hidden">
-
-      <!-- LEFT IMAGE -->
-      <div class="col-md-6 p-0">
-        <img src="{{ url_for('static', filename='images/banner_img.jpg') }}"
-             class="banner-img"
-             alt="Saree Collection">
-      </div>
-
-      <!-- RIGHT TEXT -->
-      <div class="col-md-6 p-5 banner-right">
-        <span class="banner-badge">New Collection</span>
-
-        <h2 class="banner-title mt-3">
-          Elegant Sarees <br>
-          <span>Everyday Fashion</span>
-        </h2>
-
-        <p class="banner-sub mt-3">
-          Handpicked sarees, stylish t-shirts, and premium clothing
-          crafted for comfort and everyday elegance.
-        </p>
-
-        <div class="mt-4">
-          <a href="{{ url_for('main.products') }}"
-             class="btn btn-outline-dark px-4">
-            Shop Now
-          </a>
-        </div>
-      </div>
-
+    <div class="col-md-6 p-0">
+      <img src="{{ url_for('static', filename='images/banner_img.jpg') }}"
+           class="banner-img"
+           alt="Saree Collection">
     </div>
-  </section>
 
-  <!-- ================= HEADER ================= -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Latest Products</h3>
-    <a href="{{ url_for('main.products') }}"
-       class="btn btn-outline-secondary btn-sm">
-      View All
-    </a>
+    <div class="col-md-6 p-4 banner-right">
+      <span class="banner-badge">New Collection</span>
+
+      <h2 class="banner-title mt-3">
+        Elegant Sarees <br>
+        <span>Everyday Fashion</span>
+      </h2>
+
+      <p class="banner-sub mt-2">
+        Handpicked sarees & premium fashion.
+      </p>
+
+      <a href="{{ url_for('main.products') }}"
+         class="btn btn-outline-dark mt-3">
+        Shop Now
+      </a>
+    </div>
+
   </div>
+</section>
 
-  {% if products %}
-    <!-- ================= PRODUCT GRID ================= -->
-    <div class="row g-2 g-md-3">
-      {% for p in products %}
-        <div class="col-6 col-md-4 col-lg-3">
-          {% include "store/_product_card.html" %}
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="alert alert-info">No products available.</div>
-  {% endif %}
-
+<!-- ================= HEADER ================= -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">Latest Products</h5>
+  <a href="{{ url_for('main.products') }}" class="btn btn-outline-secondary btn-sm">
+    View All
+  </a>
 </div>
+
+{% if products %}
+<div class="row g-2 g-md-3 product-grid">
+  {% for p in products %}
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      {% include "store/_product_card.html" %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 {% endblock %}

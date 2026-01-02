@@ -1,13 +1,9 @@
-/* =========================================================
-   BASE
-========================================================= */
+/* ================= BASE ================= */
 body {
   background-color: #f8f9fa;
 }
 
-/* =========================================================
-   BANNER
-========================================================= */
+/* ================= BANNER ================= */
 .banner-box {
   background: #091b37;
 }
@@ -16,23 +12,19 @@ body {
   width: 100%;
   min-height: 320px;
   object-fit: cover;
-  display: block;
 }
 
 .banner-badge {
-  display: inline-block;
+  background: #6c63ff;
   color: #fff;
-  font-size: 0.75rem;
   padding: 6px 12px;
   border-radius: 20px;
-  background: #6c63ff;
-  font-weight: 500;
+  font-size: 0.75rem;
 }
 
 .banner-title {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  line-height: 1.2;
 }
 
 .banner-title span {
@@ -41,29 +33,14 @@ body {
 
 .banner-sub {
   color: #555;
-  max-width: 420px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .banner-right {
   background: linear-gradient(135deg, #f9f7ff 0%, #ffffff 60%);
-  position: relative;
 }
 
-.banner-right::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 10%;
-  width: 4px;
-  height: 80%;
-  background: linear-gradient(180deg, #6c63ff, #ffb703);
-  border-radius: 4px;
-}
-
-/* =========================================================
-   PRODUCT CARD
-========================================================= */
+/* ================= PRODUCT CARD ================= */
 .product-card {
   border-radius: 12px;
   overflow: hidden;
@@ -75,9 +52,8 @@ body {
   object-fit: cover;
 }
 
-
 .product-card .card-title {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.25;
   line-clamp: 2;
   display: -webkit-box;
@@ -86,11 +62,14 @@ body {
   overflow: hidden;
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
+/* ================= MOBILE: FORCE 2 ITEMS ================= */
 @media (max-width: 576px) {
+
+  /* 🔥 THIS FIXES THE 3-COLUMN ISSUE */
+  .product-grid > .product-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
 
   .banner-img {
     min-height: 220px;
@@ -98,25 +77,5 @@ body {
 
   .banner-right {
     text-align: center;
-  }
-
-  .banner-right::before {
-    display: none;
-  }
-}
-
-
-/* ================= MOBILE FULL-WIDTH FIX ================= */
-@media (max-width: 576px) {
-
-  /* Reduce card outer spacing */
-  .row {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  /* Ensure cards stretch fully */
-  .product-card {
-    width: 100%;
   }
 }
