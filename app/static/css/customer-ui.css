@@ -294,3 +294,93 @@ footer a:hover {
     overflow: hidden;
   }
 }
+
+
+/* ================= SLIDER WRAPPER ================= */
+.slider-wrapper {
+  position: relative;
+}
+
+/* ================= DESKTOP / TABLET SLIDER ================= */
+.slider-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* 4 cards on desktop */
+.slider-item {
+  flex: 0 0 calc((100% - 48px) / 4);
+}
+
+/* Slider buttons */
+.slider-btn {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  font-size: 28px;
+  padding: 6px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.slider-btn.left { left: -14px; }
+.slider-btn.right { right: -14px; }
+
+/* Hover effect */
+.product-card:hover {
+  transform: translateY(-6px);
+  transition: 0.2s ease;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 992px) {
+  .slider-item {
+    flex: 0 0 calc((100% - 16px) / 2);
+  }
+}
+
+/* =========================================================
+   🔥 MOBILE VIEW (≤576px) — NO CAROUSEL
+========================================================= */
+@media (max-width: 576px) {
+
+  /* Disable slider behavior */
+  .slider-track {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .slider-item {
+    flex: unset;
+    width: 100%;
+  }
+
+  /* Hide arrows */
+  .slider-btn {
+    display: none;
+  }
+
+  /* Use full width of screen */
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* Product card full width */
+  .product-card {
+    margin: 0;
+  }
+}
