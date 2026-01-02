@@ -124,3 +124,96 @@ body {
   padding: 0;        /* 🔥 remove padding */
   color: #ffffff;
 }
+
+
+/* ================= STYLISH BANNER TEXT PANEL ================= */
+
+.banner-box {
+  background: #0b1c33;
+}
+
+/* Right text container */
+.banner-content {
+  max-width: 520px;
+  width: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #f7f6ff 60%);
+  position: relative;
+  border-radius: 16px 0 0 16px;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Vertical accent border */
+.banner-content::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 5px;
+  height: 80%;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    #6c63ff,
+    #ffb703
+  );
+}
+
+/* Typography tweaks */
+.banner-title {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.banner-title span {
+  color: #6c63ff;
+}
+
+.banner-sub {
+  color: #555;
+  font-size: 0.95rem;
+  max-width: 420px;
+}
+
+/* Badge */
+.banner-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #6c63ff;
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Button hover polish */
+.banner-content .btn {
+  border-width: 2px;
+}
+
+.banner-content .btn:hover {
+  background: #6c63ff;
+  border-color: #6c63ff;
+  color: #fff;
+}
+
+/* ================= MOBILE REFINEMENT ================= */
+@media (max-width: 768px) {
+
+  .banner-content {
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    text-align: center;
+  }
+
+  .banner-content::before {
+    display: none;
+  }
+
+  .banner-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

@@ -8,32 +8,39 @@
 <section class="banner-section mb-4">
   <div class="row banner-box rounded-4 overflow-hidden">
 
+    <!-- LEFT IMAGE -->
     <div class="col-md-6 p-0">
-      <img src="{{ url_for('static', filename='images/banner_img.jpg') }}"
+      <img src="{{ url_for('static', filename='images/ALI.jpeg') }}"
            class="banner-img"
            alt="Saree Collection">
     </div>
 
-    <div class="col-md-6 p-4 banner-right">
-      <span class="banner-badge">New Collection</span>
+    <!-- RIGHT TEXT -->
+    <div class="col-md-6 p-0 d-flex align-items-center justify-content-end">
+      <div class="banner-content p-4 p-md-5">
 
-      <h2 class="banner-title mt-3">
-        Elegant Sarees <br>
-        <span>Everyday Fashion</span>
-      </h2>
+        <span class="banner-badge">New Collection</span>
 
-      <p class="banner-sub mt-2">
-        Handpicked sarees & premium fashion.
-      </p>
+        <h2 class="banner-title mt-3">
+          Elegant Sarees <br>
+          <span>Everyday Fashion</span>
+        </h2>
 
-      <a href="{{ url_for('main.products') }}"
-         class="btn btn-outline-dark mt-3">
-        Shop Now
-      </a>
+        <p class="banner-sub mt-2">
+          Handpicked sarees & premium fashion.
+        </p>
+
+        <a href="{{ url_for('main.products') }}"
+           class="btn btn-outline-dark mt-3 px-4">
+          Shop Now
+        </a>
+
+      </div>
     </div>
 
   </div>
 </section>
+
 
 <!-- ================= HEADER ================= -->
 <div class="d-flex justify-content-between align-items-center mb-3">
