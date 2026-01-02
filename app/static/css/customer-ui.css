@@ -104,3 +104,19 @@ body {
     display: none;
   }
 }
+
+
+/* ================= MOBILE FULL-WIDTH FIX ================= */
+@media (max-width: 576px) {
+
+  /* Reduce card outer spacing */
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Ensure cards stretch fully */
+  .product-card {
+    width: 100%;
+  }
+}
