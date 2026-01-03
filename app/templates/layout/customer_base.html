@@ -5,22 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}My Store{% endblock %}</title>
 
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/customer-ui.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/common_ui.css') }}">
-
-  {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
 {% set cart_count = session.get("cart", {}) | length %}
 
-<!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid px-4">
 
@@ -30,13 +24,12 @@
       {% if site_settings and site_settings.logo_light %}
         <img src="{{ url_for('static', filename=site_settings.logo_light) }}"
              height="40"
-             class="me-2"
-             alt="{{ site_settings.site_name }}">
+             class="me-2">
       {% endif %}
       <span>{{ site_settings.site_name }}</span>
     </a>
 
-    <!-- TOGGLER -->
+    <!-- TOGGLER (hidden on mobile via CSS) -->
     <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -44,37 +37,28 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- COLLAPSE -->
     <div class="collapse navbar-collapse" id="customerNavbar">
 
-      <!-- 🔍 SEARCH (DESKTOP ONLY) -->
-      <form class="d-none d-lg-flex mx-3 search-form"
-            method="GET"
-            role="search">
+      <!-- DESKTOP SEARCH -->
+      <form class="d-none d-lg-flex mx-3 search-form" method="GET">
         <div class="input-group">
-          <input class="form-control"
-                 type="search"
-                 name="q"
-                 placeholder="Search products or categories..."
+          <input class="form-control" type="search" name="q"
+                 placeholder="Search products..."
                  value="{{ request.args.get('q', '') }}">
-          <button class="btn btn-outline-light search-btn" type="submit">
+          <button class="btn btn-outline-light" type="submit">
             <i class="bi bi-search"></i>
           </button>
         </div>
       </form>
 
-      <!-- RIGHT NAV -->
+      <!-- RIGHT -->
       <ul class="navbar-nav ms-auto align-items-center">
 
-        <!-- 🛒 CART -->
         <li class="nav-item me-3">
           <a class="nav-link position-relative cart-link text-center"
-             href="{{ url_for('main.cart_view') }}"
-             aria-label="Cart">
-
+             href="{{ url_for('main.cart_view') }}">
             <i class="bi bi-bag fs-5 d-block"></i>
             <small class="cart-text">Cart</small>
-
             {% if cart_count > 0 %}
               <span class="cart-badge">{{ cart_count }}</span>
             {% endif %}
@@ -82,120 +66,55 @@
         </li>
 
         {% if current_user.is_authenticated %}
-
-        <!-- 👤 PROFILE -->
-        <li class="nav-item dropdown me-2 profile-hover">
+        <li class="nav-item dropdown profile-hover">
           <a class="nav-link profile-link text-center p-0"
              href="#"
-             role="button"
-             aria-expanded="false">
-
+             data-bs-toggle="dropdown">
             <i class="bi bi-person fs-5 d-block"></i>
-            <small class="profile-text d-block">Profile</small>
+            <small class="profile-text">Profile</small>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end shadow profile-dropdown">
-            <li class="px-3 py-2">
-              <small class="text-muted d-block text-truncate fw-semibold">
-                {{ current_user.email }}
-              </small>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <li class="px-3 py-2 text-muted small">
+              {{ current_user.email }}
             </li>
-
             <li><hr class="dropdown-divider"></li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center"
-                 href="{{ url_for('main.orders') }}">
-                <i class="bi bi-box-seam me-2"></i> My Orders
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center"
-                 href="{{ url_for('main.dashboard') }}">
-                <i class="bi bi-speedometer2 me-2"></i> Dashboard
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center"
-                 href="{{ url_for('main.wishlist') }}">
-                <i class="bi bi-heart me-2"></i> Wishlist
-              </a>
-            </li>
-
+            <li><a class="dropdown-item" href="{{ url_for('main.orders') }}">My Orders</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('main.wishlist') }}">Wishlist</a></li>
             <li><hr class="dropdown-divider"></li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center text-danger"
-                 href="{{ url_for('auth.logout') }}">
-                <i class="bi bi-box-arrow-right me-2"></i> Logout
-              </a>
-            </li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Logout</a></li>
           </ul>
         </li>
-
         {% else %}
-
-        <!-- LOGIN -->
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('auth.login') }}">
-            Login
-          </a>
+          <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
         </li>
-
         {% endif %}
-      </ul>
 
+      </ul>
     </div>
   </div>
 </nav>
 
-<!-- 🔍 SEARCH (MOBILE ONLY, BELOW NAVBAR) -->
+<!-- MOBILE SEARCH -->
 <div class="d-lg-none bg-dark px-3 py-2">
-  <form class="search-form" method="GET" role="search">
+  <form method="GET" class="search-form">
     <div class="input-group">
-      <input class="form-control"
-             type="search"
-             name="q"
+      <input class="form-control" type="search" name="q"
              placeholder="Search products..."
              value="{{ request.args.get('q', '') }}">
-      <button class="btn btn-outline-light search-btn" type="submit">
+      <button class="btn btn-outline-light" type="submit">
         <i class="bi bi-search"></i>
       </button>
     </div>
   </form>
 </div>
 
-{% include "layout/flash_messages.html" %}
-
-<!-- ================= PAGE CONTENT ================= -->
 <div class="container-fluid my-4 px-4">
   {% block content %}{% endblock %}
 </div>
 
-<!-- ================= FOOTER ================= -->
-<footer class="mt-5 py-4">
-  <div class="container text-center">
-    <p class="mb-1">© {{ current_year }} {{ site_settings.site_name }}</p>
-    <small>Quality Sarees • T-Shirts • Fashion</small>
-  </div>
-
-  <hr>
-
-  <div class="text-center small text-muted mb-3">
-    <a href="{{ url_for('main.about') }}">About</a> |
-    <a href="{{ url_for('main.contact') }}">Contact</a> |
-    <a href="{{ url_for('main.privacy_policy') }}">Privacy</a> |
-    <a href="{{ url_for('main.terms_and_conditions') }}">Terms</a> |
-    <a href="{{ url_for('main.faq') }}">FAQ</a> |
-    <a href="{{ url_for('main.shipping_returns') }}">Shipping</a>
-  </div>
-</footer>
-
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-{% block extra_js %}{% endblock %}
 </body>
 </html>
