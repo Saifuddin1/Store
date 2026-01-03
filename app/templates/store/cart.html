@@ -15,16 +15,19 @@
     <p class="text-muted mb-0">Review your items before checkout</p>
   </div>
 
-  <a href="{{ url_for('main.home') }}" class="btn btn-link p-0 mb-4">
-    ← Continue Shopping
+  <a href="{{ url_for('main.home') }}" class="custom-btn">
+    <span class="arrow">←</span>
+    <span>Continue Shopping</span>
   </a>
+
   <div class="row g-4">
 
     <!-- ================= ITEMS ================= -->
     <div class="col-lg-8">
 
       {% for item in items %}
-      <div class="card shadow-sm mb-3 border-0">
+      <div class="card shadow-sm mb-3 border-0 cart-item-card">
+
         <div class="card-body">
 
           <div class="d-flex gap-3 align-items-start">

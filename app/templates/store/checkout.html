@@ -14,9 +14,10 @@
     </p>
   </div>
 
-  <a href="{{ url_for('main.cart_view') }}"
-     class="btn btn-link p-0 mb-3">
-    ← Back to Cart
+
+    <a href="{{ url_for('main.cart_view') }}" class="custom-btn">
+    <span class="arrow">←</span>
+    <span>Back to Cart</span>
   </a>
 
   <form method="POST" action="{{ url_for('main.place_order') }}">
