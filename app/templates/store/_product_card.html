@@ -1,5 +1,19 @@
 <div class="card product-card h-100 shadow-sm position-relative">
 
+<!-- ❤️ WISHLIST -->
+{% if current_user.is_authenticated %}
+  <form method="POST"
+        action="{{ url_for('main.toggle_wishlist', product_id=p.id) }}"
+        class="wishlist-form">
+    <button type="submit"
+            class="wishlist-btn {% if p.id in wishlist_ids %}active{% endif %}"
+            aria-label="Wishlist">
+      <i class="bi {% if p.id in wishlist_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+    </button>
+  </form>
+{% endif %}
+
+
   <!-- IMAGE -->
   <div class="position-relative">
     {% if p.primary_image %}

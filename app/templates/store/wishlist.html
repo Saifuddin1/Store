@@ -6,41 +6,89 @@
 
 <h2 class="mb-4">❤️ My Wishlist</h2>
 
+
 {% if items %}
 <div class="row">
 
   {% for w in items %}
   <div class="col-md-3 mb-4">
 
-    <div class="card h-100 shadow-sm">
+<div class="card h-100 shadow-sm position-relative">
 
-      {% if w.product.primary_image %}
-        <img src="{{ url_for('static', filename=w.product.primary_image) }}"
-             class="card-img-top"
-             style="height:200px; object-fit:cover;">
-      {% endif %}
+  <!-- ❌ REMOVE ICON -->
+  <form method="POST"
+        action="{{ url_for('main.toggle_wishlist', product_id=w.product.id) }}"
+        class="wishlist-remove-form">
+    <button type="submit"
+            class="wishlist-remove-btn"
+            title="Remove from wishlist">
+      &times;
+    </button>
+  </form>
 
-      <div class="card-body">
-        <h6>{{ w.product.name }}</h6>
+  {% if w.product.primary_image %}
+    <img src="{{ url_for('static', filename=w.product.primary_image) }}"
+         class="card-img-top wishlist-img">
+  {% endif %}
 
-        <p class="fw-bold">₹{{ w.product.final_price }}</p>
+  <div class="card-body">
+    <h6>{{ w.product.name }}</h6>
 
-        <a href="{{ url_for('main.product_detail', slug=w.product.slug) }}"
-           class="btn btn-outline-primary btn-sm w-100">
-          View Product
-        </a>
-      </div>
+    <p class="fw-bold mb-2">
+      ₹{{ w.product.final_price }}
+    </p>
 
-    </div>
+    {% if w.product.stock_quantity > 0 %}
+      <form method="POST"
+            action="{{ url_for('main.move_wishlist_to_cart', product_id=w.product.id) }}">
+        <button type="submit"
+                class="btn btn-primary btn-sm w-100">
+          🛒 Move to Cart
+        </button>
+      </form>
+    {% else %}
+      <button class="btn btn-secondary btn-sm w-100" disabled>
+        Out of Stock
+      </button>
+    {% endif %}
+
+  </div>
+
+</div>
+
 
   </div>
   {% endfor %}
 
 </div>
 {% else %}
-<div class="alert alert-info">
-  Your wishlist is empty.
+<div class="d-flex justify-content-center py-5">
+  <div class="text-center" style="max-width:420px;">
+
+    <!-- Icon -->
+    <div class="mb-3 text-danger" style="font-size:56px;">
+      <i class="bi bi-heart"></i>
+    </div>
+
+    <!-- Title -->
+    <h5 class="fw-bold mb-2">
+      Your wishlist is empty
+    </h5>
+
+    <!-- Subtitle -->
+    <p class="text-muted mb-4">
+      Save your favourite items here and come back anytime.
+    </p>
+
+    <!-- CTA -->
+    <a href="{{ url_for('main.home') }}"
+       class="btn btn-outline-dark px-4">
+      🛍️ Browse Products
+    </a>
+
+  </div>
 </div>
+
 {% endif %}
 
 {% endblock %}

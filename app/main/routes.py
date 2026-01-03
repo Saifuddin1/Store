@@ -69,6 +69,73 @@ def order_detail(order_id):
     )
 
 
+# @main_bp.route("/")
+# def home():
+
+#     # 🔐 Redirect admin users to admin dashboard
+#     if current_user.is_authenticated:
+#         if getattr(current_user, "role", None) == "admin":
+#             return redirect(url_for("admin.dashboard"))
+
+
+#     q = request.args.get("q", "").strip()
+
+#     products_query = (
+#         Product.query
+#         .join(Category)
+#         .filter(
+#             Product.is_active == True,
+#             Category.is_active == True
+#         )
+#     )
+
+#     # 🔍 SEARCH
+#     if q:
+#         products_query = products_query.filter(
+#             or_(
+#                 Product.name.ilike(f"%{q}%"),
+#                 Category.name.ilike(f"%{q}%")
+#             )
+#         )
+
+#     products = (
+#         products_query
+#         .order_by(Product.created_at.desc())
+#         .limit(8)
+#         .all()
+#     )
+
+#     # ⭐ Rating summary
+#     ratings = (
+#         db.session.query(
+#             ProductReview.product_id,
+#             func.avg(ProductReview.rating).label("avg_rating"),
+#             func.count(ProductReview.id).label("total_reviews")
+#         )
+#         .filter(ProductReview.is_approved == True)
+#         .group_by(ProductReview.product_id)
+#         .all()
+#     )
+
+#     rating_map = {
+#         r.product_id: {
+#             "avg": round(float(r.avg_rating), 1),
+#             "count": r.total_reviews
+#         }
+#         for r in ratings
+#     }
+
+#     return render_template(
+#         "store/home.html",
+#         products=products,
+#         rating_map=rating_map,
+#         search_query=q
+#     )
+
+
+from flask_login import current_user
+from sqlalchemy import or_, func
+
 @main_bp.route("/")
 def home():
 
@@ -76,7 +143,6 @@ def home():
     if current_user.is_authenticated:
         if getattr(current_user, "role", None) == "admin":
             return redirect(url_for("admin.dashboard"))
-
 
     q = request.args.get("q", "").strip()
 
@@ -125,12 +191,48 @@ def home():
         for r in ratings
     }
 
+    # ✅ IMPORTANT: wishlist ids for current user
+    wishlist_ids = set()
+    if current_user.is_authenticated:
+        wishlist_ids = {
+            wid for (wid,) in db.session.query(Wishlist.product_id)
+            .filter(Wishlist.user_id == current_user.id)
+            .all()
+        }
+
     return render_template(
         "store/home.html",
         products=products,
         rating_map=rating_map,
-        search_query=q
+        search_query=q,
+        wishlist_ids=wishlist_ids  # ✅ PASS THIS
     )
+
+
+@main_bp.route("/wishlist/move-to-cart/<int:product_id>", methods=["POST"])
+@login_required
+def move_wishlist_to_cart(product_id):
+
+    # 1️⃣ Remove from wishlist (if exists)
+    wishlist_item = Wishlist.query.filter_by(
+        user_id=current_user.id,
+        product_id=product_id
+    ).first()
+
+    if wishlist_item:
+        db.session.delete(wishlist_item)
+        db.session.commit()
+
+    # 2️⃣ Add to cart using EXISTING helper
+    success, message = add_to_cart(product_id, qty=1)
+
+    if not success:
+        flash(message, "danger")
+        return redirect(url_for("main.wishlist"))
+
+    flash("Moved to cart 🛒", "success")
+    return redirect(url_for("main.wishlist"))
+
 
 
 from sqlalchemy import or_, func

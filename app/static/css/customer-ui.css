@@ -578,3 +578,96 @@ body {
   /* Optional polish */
   background: #fff;
 }
+
+
+/* ================= WISHLIST REMOVE BUTTON ================= */
+
+.wishlist-remove-form {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.wishlist-remove-btn {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+
+  font-size: 18px;
+  line-height: 1;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.wishlist-remove-btn:hover {
+  background: #dc3545;
+}
+
+.wishlist-remove-btn:active {
+  transform: scale(0.92);
+}
+
+/* Image polish */
+.wishlist-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+
+/* ================= WISHLIST ICON (AMAZON / MYNTRA STYLE) ================= */
+
+.wishlist-form{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:5;
+}
+
+.wishlist-btn{
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,0.08);
+  background:rgba(255,255,255,0.95);
+
+  cursor:pointer;
+  transition:all .15s ease;
+}
+
+.wishlist-btn i{
+  font-size:18px;
+  color:#666;
+}
+
+.wishlist-btn:hover i{
+  color:#dc3545;
+}
+
+/* ✅ already in wishlist */
+.wishlist-btn.active{
+  border-color:rgba(220,53,69,.35);
+}
+
+.wishlist-btn.active i{
+  color:#dc3545;
+}
+
+.wishlist-btn:active{
+  transform:scale(.92);
+}
