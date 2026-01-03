@@ -19,7 +19,7 @@
 {% set cart_count = session.get("cart", {}) | length %}
 
 <!-- ================= NAVBAR ================= -->
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-dark bg-dark sticky-top">
   <div class="container-fluid px-3 d-flex align-items-center justify-content-between">
 
     <!-- LEFT: LOGO -->
@@ -103,7 +103,7 @@
 {% include "layout/flash_messages.html" %}
 
 <!-- ================= PAGE CONTENT ================= -->
-<div class="container-fluid my-4 px-4">
+<div class="container-fluid my-4">
   {% block content %}{% endblock %}
 </div>
 
