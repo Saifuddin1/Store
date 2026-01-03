@@ -560,3 +560,20 @@ body {
   }
 }
 
+
+
+/* ================= CART ITEM IMAGE ================= */
+
+.cart-item-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+
+  border-radius: 10px;
+
+  /* Subtle dark border */
+  border: 1.5px solid #343a40;
+
+  /* Optional polish */
+  background: #fff;
+}
