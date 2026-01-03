@@ -12,6 +12,7 @@ ALLOWED_STATUS_TRANSITIONS = {
     "SHIPPED": ["DELIVERED"],
     "DELIVERED": [],
     "CANCELLED": [],
+    "PARTIALLY_CANCELLED": ["PACKED", "CANCELLED"],
 }
 
 
@@ -285,6 +286,11 @@ class OrderItem(db.Model):
     qty = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
     subtotal = db.Column(db.Float, nullable=False)
+
+    status = db.Column(
+        db.String(20),
+        default="PLACED"
+    )
 
     order = db.relationship(
         "Order",

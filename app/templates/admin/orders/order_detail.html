@@ -6,10 +6,10 @@
 
 <h3 class="mb-3">📦 Order #{{ order.id }}</h3>
 
+<!-- ================= ORDER SUMMARY ================= -->
 <div class="card shadow-sm mb-4">
   <div class="card-body">
 
-    <!-- BASIC INFO -->
     <p>
       <strong>Status:</strong>
       <span class="badge bg-info">
@@ -29,22 +29,34 @@
 
     <hr>
 
-    <!-- ITEMS -->
+    <!-- ================= ITEMS ================= -->
     <h5>Items</h5>
     <ul class="list-unstyled">
       {% for item in order.items %}
-        <li>
-          {{ item.product_name }} × {{ item.qty }}
-          <span class="float-end">₹{{ item.subtotal }}</span>
+        <li class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            {{ item.product_name }} × {{ item.qty }}
+
+            {% if item.status == "CANCELLED" %}
+              <span class="badge bg-danger ms-2">Cancelled</span>
+            {% elif item.status == "SHIPPED" %}
+              <span class="badge bg-info ms-2">Shipped</span>
+            {% elif item.status == "DELIVERED" %}
+              <span class="badge bg-success ms-2">Delivered</span>
+            {% else %}
+              <span class="badge bg-secondary ms-2">Active</span>
+            {% endif %}
+          </div>
+
+          <span>₹{{ item.subtotal }}</span>
         </li>
       {% endfor %}
     </ul>
 
     <hr>
 
-    <!-- ADMIN ACTIONS -->
+    <!-- ================= ADMIN ACTIONS ================= -->
     <h5 class="mt-4">⚙ Admin Actions</h5>
-
 
     {% if order.status == "PLACED" %}
       <form method="POST"
@@ -57,7 +69,7 @@
       </form>
     {% endif %}
 
-    {% if order.status == "CONFIRMED" %}
+    {% if order.status in ["CONFIRMED", "PARTIALLY_CANCELLED"] %}
       <form method="POST"
             action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
             class="mb-3">
@@ -78,6 +90,7 @@
         </button>
       </form>
     {% endif %}
+
     {% if order.status == "SHIPPED" %}
       <form method="POST"
             action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
@@ -89,9 +102,13 @@
       </form>
     {% endif %}
 
-    {% if order.status in ["PLACED", "CONFIRMED"] %}
+    <!-- ================= ADMIN ITEM-LEVEL CANCEL ================= -->
+    {% if order.status in ["PLACED", "CONFIRMED", "PARTIALLY_CANCELLED"] %}
       <hr>
-      <h5 class="mt-4 text-danger">❌ Cancel Order</h5>
+      <h5 class="mt-4 text-danger">❌ Cancel Items</h5>
+      <p class="text-muted small">
+        Select specific items to cancel. Shipped or delivered items cannot be cancelled.
+      </p>
 
       <form method="POST"
             action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
@@ -99,19 +116,46 @@
 
         <input type="hidden" name="status" value="CANCELLED">
 
+        <!-- ITEM CHECKBOXES -->
+        <div class="mb-3">
+          {% for item in order.items %}
+            {% if item.status not in ["CANCELLED", "SHIPPED", "DELIVERED"] %}
+              <div class="form-check mb-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="item_ids"
+                  value="{{ item.id }}"
+                  id="admin_item_{{ item.id }}"
+                >
+                <label class="form-check-label" for="admin_item_{{ item.id }}">
+                  {{ item.product_name }} × {{ item.qty }}
+                  (₹{{ item.subtotal }})
+                </label>
+              </div>
+            {% else %}
+              <div class="text-muted small mb-2">
+                {{ item.product_name }} — {{ item.status.replace("_"," ").title() }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- REASON -->
         <div class="mb-3">
           <label class="form-label">
             Cancellation Reason
           </label>
-          <textarea name="remark"
-                    class="form-control"
-                    rows="3"
-                    placeholder="Reason for cancelling this order"
-                    required></textarea>
+          <textarea
+            name="remark"
+            class="form-control"
+            rows="3"
+            placeholder="Reason for cancelling selected item(s)"
+            required></textarea>
         </div>
 
         <button type="submit" class="btn btn-danger">
-          Cancel Order & Notify Customer
+          Cancel Selected Items & Notify Customer
         </button>
       </form>
     {% endif %}
@@ -119,7 +163,7 @@
   </div>
 </div>
 
-<!-- STATUS HISTORY -->
+<!-- ================= STATUS HISTORY ================= -->
 <div class="card shadow-sm">
   <div class="card-body">
 

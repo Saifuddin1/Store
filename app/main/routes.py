@@ -26,6 +26,8 @@ from app import mail
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_, func,select
 
+from app.utils.utils import recalc_order_status, recalc_order_total
+
 
 main_bp = Blueprint("main", __name__)
 
@@ -572,49 +574,69 @@ def cancel_order(order_id):
     if order.user_id != current_user.id:
         abort(403)
 
-    if order.status not in ["PLACED", "CONFIRMED"]:
+    if order.status not in ["PLACED", "CONFIRMED", "PARTIALLY_CANCELLED"]:
         flash("This order cannot be cancelled now", "danger")
         return redirect(url_for("main.orders"))
 
     if request.method == "POST":
+        item_ids = request.form.getlist("item_ids")
         reason = request.form.get("reason")
 
-        if not reason:
-            flash("Cancellation reason is required", "danger")
+        if not item_ids:
+            flash("Please select at least one item to cancel", "danger")
             return redirect(request.url)
 
         try:
-            for item in order.items:
-                product = Product.query.get(item.product_id)
+            for item_id in item_ids:
+                item = OrderItem.query.get(item_id)
 
+                if not item or item.status == "CANCELLED":
+                    continue
+
+                product = Product.query.get(item.product_id)
                 if product:
                     product.stock_quantity += item.qty
-                
 
-            history = OrderStatusHistory(
-                order_id=order.id,
-                old_status=order.status,
-                new_status="CANCELLED",
-                changed_by=current_user.id,
-                remark=reason
-            )
+                old_item_status = item.status
+                item.status = "CANCELLED"
 
-            order.status = "CANCELLED"
+                db.session.add(
+                    OrderStatusHistory(
+                        order_id=order.id,
+                        old_status=old_item_status,
+                        new_status="ITEM_CANCELLED",
+                        changed_by=current_user.id,
+                        remark=f"{item.product_name} cancelled. Reason: {reason}"
+                    )
+                )
 
-            db.session.add(history)
+            old_order_status = order.status
+            recalc_order_status(order)
+            recalc_order_total(order)   # ✅ HERE
+
+            if old_order_status != order.status:
+                db.session.add(
+                    OrderStatusHistory(
+                        order_id=order.id,
+                        old_status=old_order_status,
+                        new_status=order.status,
+                        changed_by=current_user.id,
+                        remark="Order status updated after item cancellation"
+                    )
+                )
+
             db.session.commit()
-
-            flash("Your order has been cancelled successfully", "success")
-            return redirect(url_for("main.orders"))
+            flash("Selected items cancelled successfully", "success")
 
         except Exception:
             db.session.rollback()
             flash("Something went wrong. Please try again.", "danger")
-            return redirect(url_for("main.orders"))
+
+        return redirect(url_for("main.orders"))
 
     return render_template("main/cancel_order.html", order=order)
 
-
+    
 @main_bp.route("/orders/<int:order_id>/cancel", methods=["POST"])
 @login_required
 def cancel_order_post(order_id):

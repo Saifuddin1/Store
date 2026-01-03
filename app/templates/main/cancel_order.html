@@ -18,7 +18,7 @@
 
   <div class="row">
 
-    <!-- LEFT: ORDER SUMMARY -->
+    <!-- LEFT: ORDER SUMMARY (UNCHANGED) -->
     <div class="col-md-5 mb-4">
       <div class="card shadow-sm">
         <div class="card-body">
@@ -48,7 +48,12 @@
           <ul class="list-unstyled small">
             {% for item in order.items %}
               <li class="d-flex justify-content-between">
-                <span>{{ item.product_name }} × {{ item.qty }}</span>
+                <span>
+                  {{ item.product_name }} × {{ item.qty }}
+                  {% if item.status == "CANCELLED" %}
+                    <span class="text-danger">(Cancelled)</span>
+                  {% endif %}
+                </span>
                 <span>₹{{ item.subtotal }}</span>
               </li>
             {% endfor %}
@@ -58,7 +63,7 @@
       </div>
     </div>
 
-    <!-- RIGHT: CANCEL FORM -->
+    <!-- RIGHT: CANCEL FORM (ENHANCED, NOT BROKEN) -->
     <div class="col-md-7">
       <div class="card shadow-sm border-danger">
         <div class="card-body">
@@ -68,12 +73,43 @@
           </h5>
 
           <div class="alert alert-warning small">
+            • You can cancel one, multiple, or all items.<br>
             • This action cannot be undone.<br>
-            • Once cancelled, the order cannot be processed again.
+            • Cancelled items cannot be processed again.
           </div>
 
           <form method="POST">
 
+            <!-- ITEM SELECTION -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                Select items to cancel <span class="text-danger">*</span>
+              </label>
+
+              {% for item in order.items %}
+                {% if item.status != "CANCELLED" %}
+                  <div class="form-check mb-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="item_ids"
+                      value="{{ item.id }}"
+                      id="item{{ item.id }}"
+                    >
+                    <label class="form-check-label" for="item{{ item.id }}">
+                      {{ item.product_name }} × {{ item.qty }}
+                      (₹{{ item.subtotal }})
+                    </label>
+                  </div>
+                {% else %}
+                  <div class="text-muted small mb-2">
+                    {{ item.product_name }} — ❌ Already cancelled
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            <!-- REASON -->
             <div class="mb-3">
               <label class="form-label fw-semibold">
                 Reason for cancellation <span class="text-danger">*</span>
@@ -82,15 +118,17 @@
                 name="reason"
                 class="form-control"
                 rows="4"
-                placeholder="Please tell us why you want to cancel this order..."
+                placeholder="Please tell us why you want to cancel the selected item(s)..."
                 required></textarea>
             </div>
 
+            <!-- ACTION BUTTONS -->
             <div class="d-flex gap-2 mt-4">
-              <button type="submit"
-                      class="btn btn-danger px-4"
-                      onclick="return confirm('Are you sure you want to cancel this order?');">
-                ❌ Cancel Order
+              <button
+                type="submit"
+                class="btn btn-danger px-4"
+                onclick="return confirm('Are you sure you want to cancel the selected item(s)?');">
+                ❌ Cancel Selected Items
               </button>
 
               <a href="{{ url_for('main.orders') }}"

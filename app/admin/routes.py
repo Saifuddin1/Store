@@ -32,6 +32,8 @@ from sqlalchemy import func
 from sqlalchemy.orm.attributes import flag_modified
 import json
 
+from app.utils.utils import recalc_order_status, recalc_order_total
+
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -404,6 +406,7 @@ def update_order_status(order_id):
 
     new_status = request.form.get("status")
     remark = request.form.get("remark")
+    item_ids = request.form.getlist("item_ids")
 
     allowed = ALLOWED_STATUS_TRANSITIONS.get(order.status, [])
 
@@ -412,32 +415,64 @@ def update_order_status(order_id):
         return redirect(url_for("admin.order_detail", order_id=order.id))
 
     try:
-        # 🔁 RESTORE STOCK ONLY IF ADMIN CANCELS
+        old_order_status = order.status
+
+        # 🔴 ADMIN ITEM-LEVEL CANCEL
         if new_status == "CANCELLED":
-            for item in order.items:
+            if not item_ids:
+                flash("Please select at least one item to cancel", "danger")
+                return redirect(url_for("admin.order_detail", order_id=order.id))
+
+            for item_id in item_ids:
+                item = OrderItem.query.get(item_id)
+
+                if not item or item.status in ["CANCELLED", "SHIPPED", "DELIVERED"]:
+                    continue
+
+                # restore stock
                 product = Product.query.get(item.product_id)
                 if product:
                     product.stock_quantity += item.qty
 
-        # 🧾 STATUS HISTORY
-        history = OrderStatusHistory(
-            order_id=order.id,
-            old_status=order.status,
-            new_status=new_status,
-            changed_by=current_user.id,
-            remark=remark
-        )
+                old_item_status = item.status
+                item.status = "CANCELLED"
 
-        order.status = new_status
+                db.session.add(
+                    OrderStatusHistory(
+                        order_id=order.id,
+                        old_status=old_item_status,
+                        new_status="ITEM_CANCELLED",
+                        changed_by=current_user.id,
+                        remark=f"{item.product_name} cancelled by admin. Reason: {remark}"
+                    )
+                )
 
-        db.session.add(history)
+            # 🔁 recalc order
+            recalc_order_status(order)
+            recalc_order_total(order)
+
+        else:
+            order.status = new_status
+
+        # 🧾 ORDER STATUS HISTORY
+        if old_order_status != order.status:
+            db.session.add(
+                OrderStatusHistory(
+                    order_id=order.id,
+                    old_status=old_order_status,
+                    new_status=order.status,
+                    changed_by=current_user.id,
+                    remark=remark
+                )
+            )
+
         db.session.commit()
 
-        # 🔔 Send cancellation email
+        # 🔔 Notify user
         if new_status == "CANCELLED":
             send_order_cancel_email(order, remark)
 
-        flash(f"Order marked as {new_status}", "success")
+        flash(f"Order updated successfully", "success")
 
     except Exception as e:
         db.session.rollback()
