@@ -4,7 +4,6 @@ from app.models import User
 from app import db,bcrypt
 from datetime import datetime
 
-from app.utils.email import send_password_reset_email
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -18,7 +17,7 @@ def login():
         user = User.query.filter_by(email=email, is_active=True).first()
 
         if user and user.check_password(password):
-            login_user(user)
+            login_user(user, remember=True)
 
             user.last_login = datetime.utcnow()
             db.session.commit()
@@ -63,7 +62,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        login_user(user)
+        login_user(user, remember=True)
         flash("Account created successfully!", "success")
 
         return redirect(url_for("main.dashboard"))
@@ -102,27 +101,3 @@ def forgot_password():
         user=user
     )
 
-
-
-# @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
-# def reset_password(token):
-#     user = User.verify_reset_token(token)
-
-#     if not user:
-#         flash("Invalid or expired password reset link.", "danger")
-#         return redirect(url_for("auth.login"))
-
-#     if request.method == "POST":
-#         password = request.form.get("password")
-
-#         if not password or len(password) < 6:
-#             flash("Password must be at least 6 characters.", "danger")
-#             return redirect(request.url)
-
-#         user.set_password(password)
-#         db.session.commit()
-
-#         flash("Password reset successful. Please login.", "success")
-#         return redirect(url_for("auth.login"))
-
-#     return render_template("auth/reset_password.html")
