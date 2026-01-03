@@ -380,6 +380,7 @@ body {
 /* Mobile polish */
 @media (max-width: 768px) {
   .cart-capsule-btn {
+    width: 100%; 
     font-size: 15px;
     padding: 14px;
   }
