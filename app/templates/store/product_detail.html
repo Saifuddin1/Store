@@ -4,6 +4,9 @@
 
 {% block content %}
 
+{% set cart = session.get("cart", {}) %}
+{% set product_in_cart = (product.id|string) in cart %}
+
 <!-- Breadcrumb -->
 <nav class="mb-3 small">
   <a href="/" class="text-decoration-none">Home</a> /
@@ -48,36 +51,12 @@
   <div class="col-md-7">
 
     <h2 class="mb-2">{{ product.name }}</h2>
-    {% if avg_rating %}
-      <div class="mb-2">
-
-        <span class="text-warning fs-5">
-          {% for i in range(avg_rating|int) %}
-            ⭐
-          {% endfor %}
-          {% for i in range(5 - (avg_rating|int)) %}
-            ☆
-          {% endfor %}
-        </span>
-
-        <span class="text-muted ms-2">
-          {{ avg_rating }} / 5 ({{ reviews|length }} reviews)
-        </span>
-
-      </div>
-    {% endif %}
-
 
     <!-- PRICE -->
     <div class="mb-2">
       {% if product.final_price < product.price %}
-        <span class="fs-3 fw-bold text-success">
-          ₹{{ product.final_price }}
-        </span>
+        <span class="fs-3 fw-bold text-success">₹{{ product.final_price }}</span>
         <del class="text-muted ms-2">₹{{ product.price }}</del>
-        <span class="badge bg-success ms-2">
-          Save ₹{{ (product.price - product.final_price)|round(0, 'floor')|int }}
-        </span>
       {% else %}
         <span class="fs-3 fw-bold">₹{{ product.price }}</span>
       {% endif %}
@@ -97,72 +76,74 @@
       <li>✔ Secure Checkout</li>
     </ul>
 
-    <!-- ADD TO CART -->
+    <!-- ================= CART ACTION ================= -->
     {% if product.stock_quantity > 0 %}
-    <form method="POST"
-          action="{{ url_for('main.cart_add', product_id=product.id) }}"
-          class="mb-4">
 
-      <!-- QTY SELECTOR -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Quantity</label>
+      {% if product_in_cart %}
 
-        <div class="qty-box">
+        <a href="{{ url_for('main.cart_view') }}"
+          class="cart-capsule-btn">
+          <span class="check">✔</span>
+          <span class="text">In Cart · Go to Cart</span>
+        </a>
 
-          <button type="button"
-                  class="qty-btn"
-                  onclick="changeQty(-1)">
-            -
-          </button>
 
-          <input type="number"
-                 id="qty-input"
-                 name="qty"
-                 class="qty-input"
-                 value="1"
-                 min="1"
-                 max="{{ product.stock_quantity }}"
-                 readonly>
+      {% else %}
 
-          <button type="button"
-                  class="qty-btn"
-                  onclick="changeQty(1)">
-            +
-          </button>
+        <!-- ➕ ADD TO CART -->
+        <form method="POST"
+              action="{{ url_for('main.cart_add', product_id=product.id) }}"
+              class="mb-4">
 
-        </div>
+<div class="mb-3">
+  <label class="form-label fw-semibold">Quantity</label>
 
-        <small class="text-muted">
-          Available stock: {{ product.stock_quantity }}
-        </small>
-      </div>
+  <div class="qty-premium">
+    <button type="button"
+            class="qty-btn minus"
+            onclick="changeQty(-1)">
+      −
+    </button>
 
-      <button type="submit"
-              class="btn btn-primary btn-lg w-100">
-        🛒 Add to Cart
-      </button>
+    <span id="qty-display">1</span>
 
-    </form>
+    <button type="button"
+            class="qty-btn plus"
+            onclick="changeQty(1)">
+      +
+    </button>
 
-{% else %}
-
-  <div class="alert alert-danger mb-3">
-    🚫 This product is currently out of stock.
+    <!-- hidden input for form submit -->
+    <input type="hidden"
+           id="qty-input"
+           name="qty"
+           value="1"
+           min="1"
+           max="{{ product.stock_quantity }}">
   </div>
 
-  <!-- 🔔 WhatsApp Notify
-  <a href="https://wa.me/919581170036?text={{ 
-      ('Hi, I want to be notified when this product is back in stock:%0A%0A'
-      ~ product.name ~ '%0A'
-      ~ 'Price: ₹' ~ product.final_price
-      ) | urlencode }}"
-     target="_blank"
-     class="btn btn-success btn-lg w-100 mb-2">
+  <small class="text-muted d-block mt-2">
+    Available stock: {{ product.stock_quantity }}
+  </small>
+</div>
 
-    📲 Notify Me on WhatsApp
-  </a> -->
 
-  {% if current_user.is_authenticated %}
+
+          <button type="submit"
+                  class="btn btn-primary btn-lg w-100">
+            🛒 Add to Cart
+          </button>
+
+        </form>
+
+      {% endif %}
+
+    {% else %}
+
+      <div class="alert alert-danger">
+        🚫 This product is currently out of stock.
+      </div>
+      {% if current_user.is_authenticated %}
     <form method="POST"
           action="{{ url_for('main.notify_me', product_id=product.id) }}">
       <button type="submit"
@@ -172,10 +153,7 @@
     </form>
   {% endif %}
 
-{% endif %}
-
-
-
+    {% endif %}
 
     <!-- TABS -->
     <ul class="nav nav-tabs mb-3">
@@ -208,7 +186,8 @@
         </p>
       </div>
     </div>
-<!-- ================= REVIEWS ================= -->
+
+    <!-- ================= REVIEWS ================= -->
 <div class="mt-5">
 
   <h4 class="mb-3">Customer Reviews</h4>
@@ -249,7 +228,6 @@
 <!-- =============== END REVIEWS ================= -->
 
   </div>
-
 </div>
 
 <!-- ================= SCRIPTS ================= -->
@@ -299,71 +277,23 @@ if (zoomContainer && zoomImage) {
 }
 </script>
 
-<!-- ================= STYLES ================= -->
-<style>
-.product-thumb {
-  width: 75px;
-  height: 75px;
-  object-fit: cover;
-  cursor: pointer;
-}
+<script>
+function changeQty(delta) {
+  const input = document.getElementById("qty-input");
+  const display = document.getElementById("qty-display");
 
-.product-thumb:hover,
-.product-thumb.border-primary {
-  border: 2px solid #0d6efd !important;
-}
+  const max = parseInt(input.max);
+  let value = parseInt(input.value);
 
-.product-zoom-container {
-  overflow: hidden;
-  cursor: zoom-in;
-}
+  value += delta;
 
-.product-zoom-image {
-  transition: transform 0.25s ease;
-  width: 100%;
-  height: 420px;
-  object-fit: cover;
-}
+  if (value < 1) value = 1;
+  if (value > max) value = max;
 
-.qty-box {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  overflow: hidden;
+  input.value = value;
+  display.textContent = value;
 }
+</script>
 
-.qty-btn {
-  background: #f8f9fa;
-  border: none;
-  padding: 8px 16px;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.qty-btn:hover {
-  background: #e9ecef;
-}
-
-.qty-input {
-  width: 60px;
-  text-align: center;
-  border: none;
-  outline: none;
-  font-size: 16px;
-  font-weight: 500;
-  background: white;
-}
-
-@media (max-width: 768px) {
-  .product-zoom-container {
-    cursor: default;
-  }
-  .product-zoom-image {
-    transform: none !important;
-  }
-}
-</style>
 
 {% endblock %}

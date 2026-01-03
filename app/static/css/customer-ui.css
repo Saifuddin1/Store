@@ -271,3 +271,154 @@ body {
     padding-bottom: 6px;
   }
 }
+
+
+/* ================= FLAT PREMIUM QUANTITY ================= */
+
+.qty-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.qty-premium span {
+  min-width: 26px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.qty-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.qty-btn:hover {
+  background: #e9ecef;
+}
+
+.qty-btn:active {
+  background: #dee2e6;
+}
+
+.qty-btn.minus {
+  color: #dc3545;
+}
+
+.qty-btn.plus {
+  color: #198754;
+}
+
+/* Mobile polish */
+@media (max-width: 768px) {
+  .qty-premium {
+    padding: 12px 18px;
+  }
+
+  .qty-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+
+  .qty-premium span {
+    font-size: 18px;
+  }
+}
+
+
+/* ================= CART CAPSULE BUTTON ================= */
+
+.cart-capsule-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: 30%;
+  padding: 14px 18px;
+
+  background: #d1f0dc;
+  color: #292224;
+
+  border: 1px solid #b7e4c7;
+  border-radius: 200px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+
+.cart-capsule-btn:hover {
+  background: #d1f0dc;
+  text-decoration: none;
+  color: #146c43;
+}
+
+.cart-capsule-btn:active {
+  transform: scale(0.98);
+}
+
+.cart-capsule-btn .check {
+  font-size: 17px;
+}
+
+/* Mobile polish */
+@media (max-width: 768px) {
+  .cart-capsule-btn {
+    font-size: 15px;
+    padding: 14px;
+  }
+}
+
+
+/* ================Cart page css==================*/
+
+.product-thumb {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.product-thumb:hover,
+.product-thumb.border-primary {
+  border: 2px solid #0d6efd !important;
+}
+
+.product-zoom-container {
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.product-zoom-image {
+  transition: transform 0.25s ease;
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+}
+
+
+
+@media (max-width: 768px) {
+  .product-zoom-container {
+    cursor: default;
+  }
+  .product-zoom-image {
+    transform: none !important;
+  }
+}
