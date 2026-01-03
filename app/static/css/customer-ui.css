@@ -163,3 +163,54 @@ body {
     min-height: 220px;
   }
 }
+
+
+/* =========================================================
+   MOBILE NAVBAR ALIGNMENT FIX (FINAL)
+========================================================= */
+@media (max-width: 991.98px) {
+
+  /* Force navbar content into a single row */
+  .navbar-collapse {
+    display: flex !important;
+    flex-grow: 1;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  /* Keep icons in a row */
+  .navbar-nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-top: 0;
+  }
+
+  /* Remove vertical stacking caused by d-block */
+  .navbar-nav .nav-link i {
+    display: inline-block !important;
+  }
+
+  .navbar-nav .cart-text,
+  .navbar-nav .profile-text {
+    display: none; /* 🔥 hide labels on mobile */
+  }
+
+  /* Normalize nav item spacing */
+  .navbar-nav .nav-item {
+    margin: 0;
+  }
+
+  /* Ensure dropdown aligns under profile icon */
+  .navbar-nav .dropdown-menu {
+    right: 0;
+    left: auto;
+    margin-top: 8px;
+  }
+
+  /* Reduce navbar height */
+  .navbar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
