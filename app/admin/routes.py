@@ -364,8 +364,6 @@ def delete_product_image(image_id):
     return redirect(url_for("admin.product_images", product_id=product_id))
 
 
-
-
 @admin_bp.route("/orders")
 @login_required
 @admin_required
@@ -459,9 +457,7 @@ def analytics_dashboard():
 @login_required
 @admin_required
 def analytics_summary():
-    """
-    Cards / KPIs
-    """
+
     now = datetime.utcnow()
     start_30 = now - timedelta(days=30)
 
@@ -504,9 +500,7 @@ def analytics_summary():
 @login_required
 @admin_required
 def analytics_orders_by_status():
-    """
-    Pie / Doughnut chart - orders grouped by status
-    """
+
     rows = db.session.query(
         Order.status,
         func.count(Order.id)
@@ -872,7 +866,6 @@ def site_settings():
 @login_required
 @admin_required
 def stock_notify_list():
-    print("jskdhskjh")
     rows = (
         db.session.query(
             Product.id.label("product_id"),
@@ -885,7 +878,6 @@ def stock_notify_list():
         .order_by(func.count(StockNotification.id).desc())
         .all()
     )
-    print(rows)
 
     return render_template(
         "admin/stock_notify_list.html",

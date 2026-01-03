@@ -22,7 +22,6 @@ def login():
             user.last_login = datetime.utcnow()
             db.session.commit()
 
-            # ✅ ROLE-BASED REDIRECT
             if user.is_admin:
                 return redirect(url_for("admin.dashboard"))
             else:
@@ -70,7 +69,6 @@ def register():
     return render_template("auth/register.html")
 
 
-
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     user = None
@@ -88,7 +86,6 @@ def forgot_password():
             flash("No account found with this email.", "danger")
             return redirect(request.url)
 
-        # ✅ If password submitted → reset
         if password:
             user.set_password(password)
             db.session.commit()

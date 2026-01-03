@@ -2,9 +2,10 @@ from flask import (
     Blueprint,
     abort, 
     render_template,
-    redirect, url_for, request, flash, current_app
+    redirect, url_for, request, 
+    flash, current_app,
+    session
 )
-from sqlalchemy import func
 from flask_login import login_required, current_user
 from app.models import (
     FAQ, AboutPage, Category, PrivacyPolicy, 
@@ -22,12 +23,8 @@ from app.utils.cart import (
 from app import db
 from flask_mail import Message
 from app import mail
-from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import or_, func
-from flask_login import current_user
-from flask import redirect, url_for
-from flask import session
+from sqlalchemy import or_, func,select
 
 
 main_bp = Blueprint("main", __name__)
@@ -69,77 +66,9 @@ def order_detail(order_id):
     )
 
 
-# @main_bp.route("/")
-# def home():
-
-#     # 🔐 Redirect admin users to admin dashboard
-#     if current_user.is_authenticated:
-#         if getattr(current_user, "role", None) == "admin":
-#             return redirect(url_for("admin.dashboard"))
-
-
-#     q = request.args.get("q", "").strip()
-
-#     products_query = (
-#         Product.query
-#         .join(Category)
-#         .filter(
-#             Product.is_active == True,
-#             Category.is_active == True
-#         )
-#     )
-
-#     # 🔍 SEARCH
-#     if q:
-#         products_query = products_query.filter(
-#             or_(
-#                 Product.name.ilike(f"%{q}%"),
-#                 Category.name.ilike(f"%{q}%")
-#             )
-#         )
-
-#     products = (
-#         products_query
-#         .order_by(Product.created_at.desc())
-#         .limit(8)
-#         .all()
-#     )
-
-#     # ⭐ Rating summary
-#     ratings = (
-#         db.session.query(
-#             ProductReview.product_id,
-#             func.avg(ProductReview.rating).label("avg_rating"),
-#             func.count(ProductReview.id).label("total_reviews")
-#         )
-#         .filter(ProductReview.is_approved == True)
-#         .group_by(ProductReview.product_id)
-#         .all()
-#     )
-
-#     rating_map = {
-#         r.product_id: {
-#             "avg": round(float(r.avg_rating), 1),
-#             "count": r.total_reviews
-#         }
-#         for r in ratings
-#     }
-
-#     return render_template(
-#         "store/home.html",
-#         products=products,
-#         rating_map=rating_map,
-#         search_query=q
-#     )
-
-
-from flask_login import current_user
-from sqlalchemy import or_, func
-
 @main_bp.route("/")
 def home():
 
-    # 🔐 Redirect admin users to admin dashboard
     if current_user.is_authenticated:
         if getattr(current_user, "role", None) == "admin":
             return redirect(url_for("admin.dashboard"))
@@ -155,7 +84,6 @@ def home():
         )
     )
 
-    # 🔍 SEARCH
     if q:
         products_query = products_query.filter(
             or_(
@@ -171,7 +99,6 @@ def home():
         .all()
     )
 
-    # ⭐ Rating summary
     ratings = (
         db.session.query(
             ProductReview.product_id,
@@ -191,7 +118,6 @@ def home():
         for r in ratings
     }
 
-    # ✅ IMPORTANT: wishlist ids for current user
     wishlist_ids = set()
     if current_user.is_authenticated:
         wishlist_ids = {
@@ -213,7 +139,6 @@ def home():
 @login_required
 def move_wishlist_to_cart(product_id):
 
-    # 1️⃣ Remove from wishlist (if exists)
     wishlist_item = Wishlist.query.filter_by(
         user_id=current_user.id,
         product_id=product_id
@@ -223,7 +148,6 @@ def move_wishlist_to_cart(product_id):
         db.session.delete(wishlist_item)
         db.session.commit()
 
-    # 2️⃣ Add to cart using EXISTING helper
     success, message = add_to_cart(product_id, qty=1)
 
     if not success:
@@ -233,9 +157,6 @@ def move_wishlist_to_cart(product_id):
     flash("Moved to cart 🛒", "success")
     return redirect(url_for("main.wishlist"))
 
-
-
-from sqlalchemy import or_, func
 
 @main_bp.route("/products")
 def product_list():
@@ -414,8 +335,6 @@ def product_detail(slug):
     )
 
 
-
-
 @main_bp.route("/cart/add/<int:product_id>", methods=["POST"])
 def cart_add(product_id):
     qty = request.form.get("qty", type=int, default=1)
@@ -427,7 +346,6 @@ def cart_add(product_id):
     else:
         flash(message, "danger")
 
-    # Redirect back to product page if possible
     return redirect(request.referrer or url_for("main.product_list"))
 
 
@@ -463,7 +381,6 @@ def cart_remove(product_id):
     return redirect(url_for("main.cart_view"))
 
 
-
 def validate_cart_stock(items):
 
     for item in items:
@@ -490,12 +407,10 @@ def checkout():
     items = cart_items()
     totals = cart_totals()
 
-
     if not items:
         flash("Your cart is empty", "warning")
         return redirect(url_for("main.cart_view"))
 
-    # 🔐 FINAL STOCK VALIDATION
     is_valid, error = validate_cart_stock(items)
 
     if not is_valid:
@@ -535,7 +450,6 @@ def place_order():
     try:
         product_ids = [item["product_id"] for item in items]
 
-        # 🔒 LOCK PRODUCT ROWS (safe even if SQLite ignores it)
         products = (
             db.session.execute(
                 select(Product)
@@ -548,7 +462,6 @@ def place_order():
 
         product_map = {p.id: p for p in products}
 
-        # ✅ FINAL STOCK CHECK
         for item in items:
             product = product_map.get(item["product_id"])
             if not product or product.stock_quantity < item["qty"]:
@@ -556,7 +469,6 @@ def place_order():
                     f"Product {item['name']} is out of stock"
                 )
 
-        # 🧾 CREATE ORDER
         order = Order(
             user_id=current_user.id,
             address_id=address.id,
@@ -566,7 +478,6 @@ def place_order():
         db.session.add(order)
         db.session.flush()  # get order.id safely
 
-        # 📦 CREATE ORDER ITEMS + DEDUCT STOCK
         for item in items:
             product = product_map[item["product_id"]]
             product.stock_quantity -= item["qty"]
@@ -581,7 +492,6 @@ def place_order():
             )
             db.session.add(order_item)
 
-        # ✅ SINGLE COMMIT (THIS IS THE ATOMIC POINT)
         db.session.commit()
 
         clear_cart()
@@ -601,8 +511,6 @@ def place_order():
         return redirect(url_for("main.checkout"))
 
 
-
-
 @main_bp.route("/address/add", methods=["GET", "POST"])
 @login_required
 def add_address():
@@ -620,7 +528,6 @@ def add_address():
             is_default=True,
         )
 
-        # unset previous default address
         Address.query.filter_by(
             user_id=current_user.id,
             is_default=True
@@ -662,11 +569,9 @@ def products():
 def cancel_order(order_id):
     order = Order.query.get_or_404(order_id)
 
-    # 🔒 Security: Only owner can cancel
     if order.user_id != current_user.id:
         abort(403)
 
-    # 🔒 Allow cancel only before dispatch
     if order.status not in ["PLACED", "CONFIRMED"]:
         flash("This order cannot be cancelled now", "danger")
         return redirect(url_for("main.orders"))
@@ -679,7 +584,6 @@ def cancel_order(order_id):
             return redirect(request.url)
 
         try:
-            # 🔁 RESTORE STOCK
             for item in order.items:
                 product = Product.query.get(item.product_id)
 
@@ -687,7 +591,6 @@ def cancel_order(order_id):
                     product.stock_quantity += item.qty
                 
 
-            # 🧾 STATUS HISTORY
             history = OrderStatusHistory(
                 order_id=order.id,
                 old_status=order.status,
@@ -732,7 +635,6 @@ def cancel_order_post(order_id):
             url_for("main.cancel_order", order_id=order.id)
         )
 
-    # 📝 Save history
     history = OrderStatusHistory(
         order_id=order.id,
         old_status=order.status,
@@ -748,7 +650,6 @@ def cancel_order_post(order_id):
 
     flash("Order cancelled successfully.", "success")
     return redirect(url_for("main.orders"))
-
 
 
 @main_bp.route("/about")
@@ -862,7 +763,6 @@ def can_review_product(user_id, product_id):
     )
 
 
-
 @main_bp.route("/review/<int:product_id>", methods=["POST"])
 @login_required
 def submit_review_from_order(product_id):
@@ -881,7 +781,6 @@ def submit_review_from_order(product_id):
         flash("Review comment is required.", "danger")
         return redirect(request.referrer)
 
-    # 🔒 Delivered check
     if not can_review_product(current_user.id, product.id):
         flash("You can review only after the product is delivered.", "danger")
         return redirect(request.referrer)
@@ -945,7 +844,6 @@ def wishlist():
         .filter(Wishlist.user_id == current_user.id)
     )
 
-    # 🔍 APPLY SEARCH (product + category)
     if q:
         query = query.filter(
             or_(
@@ -972,12 +870,10 @@ def wishlist():
 def notify_me(product_id):
     product = Product.query.get_or_404(product_id)
 
-    # If product already in stock, no need
     if product.stock_quantity > 0:
         flash("This product is already available.", "info")
         return redirect(request.referrer)
 
-    # Check existing notification
     existing = StockNotification.query.filter_by(
         user_id=current_user.id,
         product_id=product.id
