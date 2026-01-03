@@ -217,3 +217,57 @@ body {
     margin-right: auto;
   }
 }
+
+
+/* =========================================================
+   MOBILE NAVBAR – ALWAYS SHOW CART & PROFILE (NO HAMBURGER)
+========================================================= */
+
+.nav-icon {
+  position: relative;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Cart badge */
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 0.65rem;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Desktop: hover dropdown */
+@media (min-width: 992px) {
+  .profile-hover:hover > .dropdown-menu {
+    display: block;
+  }
+}
+
+/* Mobile navbar behavior */
+@media (max-width: 991.98px) {
+
+  /* Hide hamburger completely */
+  .navbar-toggler {
+    display: none;
+  }
+
+  /* Prevent collapse behavior */
+  .navbar-collapse {
+    display: none !important;
+  }
+
+  /* Keep navbar height compact */
+  .navbar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
