@@ -1,11 +1,9 @@
 from flask import session
-from app.models import Product, ProductImage
+from app.models import Product
 
 
 def get_cart():
-    """
-    Get cart from session or initialize it
-    """
+
     if "cart" not in session:
         session["cart"] = {}
     return session["cart"]

@@ -1,11 +1,13 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Load .env locally (safe in prod too)
 load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)  # 👈
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

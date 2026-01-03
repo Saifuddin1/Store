@@ -7,6 +7,7 @@ from config import Config
 from extensions import logger
 from datetime import datetime
 from flask_mail import Mail
+from flask import session
 
 
 db = SQLAlchemy()
@@ -22,6 +23,12 @@ mail = Mail()
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.config["SESSION_REFRESH_EACH_REQUEST"] = True
+    
+    # 🔐 MAKE SESSION PERMANENT (LOGIN + CART)
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
 
     db.init_app(app)
     mail.init_app(app) 
