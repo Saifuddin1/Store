@@ -29,15 +29,8 @@
       <span>{{ site_settings.site_name }}</span>
     </a>
 
-    <!-- TOGGLER (hidden on mobile via CSS) -->
-    <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#customerNavbar">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="customerNavbar">
+    <!-- COLLAPSE (USED FOR DESKTOP ONLY) -->
+    <div class="collapse navbar-collapse show" id="customerNavbar">
 
       <!-- DESKTOP SEARCH -->
       <form class="d-none d-lg-flex mx-3 search-form" method="GET">
@@ -54,10 +47,11 @@
       <!-- RIGHT -->
       <ul class="navbar-nav ms-auto align-items-center">
 
-        <li class="nav-item me-3">
+        <!-- CART -->
+        <li class="nav-item">
           <a class="nav-link position-relative cart-link text-center"
              href="{{ url_for('main.cart_view') }}">
-            <i class="bi bi-bag fs-5 d-block"></i>
+            <i class="bi bi-bag fs-5"></i>
             <small class="cart-text">Cart</small>
             {% if cart_count > 0 %}
               <span class="cart-badge">{{ cart_count }}</span>
@@ -66,11 +60,12 @@
         </li>
 
         {% if current_user.is_authenticated %}
+        <!-- PROFILE -->
         <li class="nav-item dropdown profile-hover">
-          <a class="nav-link profile-link text-center p-0"
+          <a class="nav-link profile-link text-center"
              href="#"
              data-bs-toggle="dropdown">
-            <i class="bi bi-person fs-5 d-block"></i>
+            <i class="bi bi-person fs-5"></i>
             <small class="profile-text">Profile</small>
           </a>
 

@@ -80,12 +80,12 @@ body {
 }
 
 /* ================= CART ================= */
-.cart-text {
+.cart-text,
+.profile-text {
   display: block;
   font-size: 0.65rem;
   line-height: 1;
-  margin-top: 1px;
-  padding: 0;
+  margin-top: 2px;
   color: #fff;
 }
 
@@ -117,29 +117,52 @@ body {
   }
 }
 
-/* ================= MOBILE FIX (🔥 CRITICAL) ================= */
+/* ================= MOBILE NAVBAR FIX (FINAL) ================= */
 @media (max-width: 991.98px) {
 
-  /* ❌ Kill hamburger */
+  /* Remove hamburger */
   .navbar-toggler {
     display: none;
   }
 
-  /* ✅ Force navbar items visible */
+  /* Keep navbar items in one row */
   .navbar-collapse {
     display: flex !important;
     flex-direction: row;
     justify-content: flex-end;
+    align-items: center;
   }
 
-  /* Keep right icons aligned */
   .navbar-nav {
     flex-direction: row;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
+    margin: 0;
   }
 
-  /* Banner mobile cleanup */
+  .navbar-nav .nav-item {
+    margin: 0;
+  }
+
+  /* Hide text labels on mobile */
+  .cart-text,
+  .profile-text {
+    display: none;
+  }
+
+  /* Icons inline */
+  .navbar-nav .nav-link i {
+    display: inline-block !important;
+  }
+
+  /* Dropdown alignment */
+  .dropdown-menu {
+    right: 0;
+    left: auto;
+    margin-top: 8px;
+  }
+
+  /* Banner cleanup */
   .banner-content {
     max-width: 100%;
     border-radius: 0;
@@ -161,56 +184,5 @@ body {
 
   .banner-img {
     min-height: 220px;
-  }
-}
-
-
-/* =========================================================
-   MOBILE NAVBAR ALIGNMENT FIX (FINAL)
-========================================================= */
-@media (max-width: 991.98px) {
-
-  /* Force navbar content into a single row */
-  .navbar-collapse {
-    display: flex !important;
-    flex-grow: 1;
-    justify-content: flex-end;
-    align-items: center;
-  }
-
-  /* Keep icons in a row */
-  .navbar-nav {
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    margin-top: 0;
-  }
-
-  /* Remove vertical stacking caused by d-block */
-  .navbar-nav .nav-link i {
-    display: inline-block !important;
-  }
-
-  .navbar-nav .cart-text,
-  .navbar-nav .profile-text {
-    display: none; /* 🔥 hide labels on mobile */
-  }
-
-  /* Normalize nav item spacing */
-  .navbar-nav .nav-item {
-    margin: 0;
-  }
-
-  /* Ensure dropdown aligns under profile icon */
-  .navbar-nav .dropdown-menu {
-    right: 0;
-    left: auto;
-    margin-top: 8px;
-  }
-
-  /* Reduce navbar height */
-  .navbar {
-    padding-top: 6px;
-    padding-bottom: 6px;
   }
 }
