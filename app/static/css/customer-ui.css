@@ -874,3 +874,80 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+/* ================= PRODUCT FILTER ================= */
+
+.product-filter{
+  padding-right: 12px;
+}
+
+/* Section spacing */
+.filter-block{
+  margin-bottom: 22px;
+}
+
+/* Titles */
+.filter-title{
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #212529;
+}
+
+/* Checkbox text */
+.form-check-label{
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Checkbox */
+.form-check-input{
+  cursor: pointer;
+}
+
+.search-wrapper{
+  position: relative;
+}
+
+.filter-search{
+  padding-right: 30px;
+}
+
+.clear-search{
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6c757d;
+  cursor: pointer;
+  display: none;
+  line-height: 1;
+}
+
+.clear-search:hover{
+  color: #212529;
+}
+
+/* ================= NO PRODUCTS STATE ================= */
+
+.no-products-wrapper{
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.no-products-icon{
+  font-size: 56px;
+  line-height: 1;
+}
+
+.no-products-wrapper h5{
+  font-size: 18px;
+}
+
+.no-products-wrapper p{
+  font-size: 14px;
+}

@@ -6,56 +6,93 @@
 <div class="container-fluid">
   <div class="row">
 
-    <!-- ================= DESKTOP FILTER (LEFT) ================= -->
-    <aside class="col-lg-3 d-none d-lg-block border-end">
-      <form method="GET" id="desktopFilterForm" class="p-3">
+    <!-- ================= DESKTOP FILTER ================= -->
+<aside class="col-lg-3 d-none d-lg-block">
 
-        <h6 class="fw-semibold mb-3">Filters</h6>
+  <form method="GET" id="desktopFilterForm" class="product-filter">
 
-        <div class="mb-4">
-          <h6 class="fw-semibold mb-2">Category</h6>
+    <!-- SEARCH -->
+    <div class="filter-block">
+      <h6 class="filter-title">Search</h6>
 
-          {% for cat in categories %}
-          <div class="form-check mb-2">
-            <input
-              class="form-check-input category-filter"
-              type="checkbox"
-              name="categories"
-              value="{{ cat.id }}"
-              id="cat{{ cat.id }}"
-              {% if cat.id|string in selected_categories %}checked{% endif %}
-            >
-            <label class="form-check-label" for="cat{{ cat.id }}">
-              {{ cat.name }}
-            </label>
-          </div>
-          {% endfor %}
-        </div>
+      <div class="search-wrapper">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          class="form-control form-control-sm filter-search"
+          placeholder="Search products or category"
+          id="productSearch">
 
-        {% if search_query %}
-          <input type="hidden" name="q" value="{{ search_query }}">
-        {% endif %}
+        <button
+          type="button"
+          class="clear-search"
+          id="clearSearchBtn"
+          aria-label="Clear search">
+          &times;
+        </button>
+      </div>
+    </div>
 
-      </form>
-    </aside>
+    <!-- CATEGORY -->
+    <div class="filter-block">
+      <h6 class="filter-title">Category</h6>
+
+      {% for cat in categories %}
+      <div class="form-check mb-2">
+        <input
+          class="form-check-input category-filter"
+          type="checkbox"
+          name="categories"
+          value="{{ cat.id }}"
+          id="cat{{ cat.id }}"
+          {% if cat.id|string in selected_categories %}checked{% endif %}>
+        <label class="form-check-label" for="cat{{ cat.id }}">
+          {{ cat.name }}
+        </label>
+      </div>
+      {% endfor %}
+    </div>
+
+  </form>
+
+</aside>
+
+
+
 
     <!-- ================= PRODUCTS AREA ================= -->
     <main class="col-lg-9 col-12">
 
-      <!-- MOBILE FILTER BAR -->
-      <div class="d-lg-none d-flex justify-content-between align-items-center mb-3">
-        <button class="btn btn-outline-dark btn-sm"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#mobileFilter">
-          ☰ Filters
-        </button>
+      <!-- MOBILE SEARCH + FILTER -->
+      <div class="d-lg-none mb-3">
+        <form method="GET" class="d-flex gap-2">
 
-        {% if search_query %}
-          <span class="text-muted small">
-            Results for "{{ search_query }}"
-          </span>
-        {% endif %}
+          <input
+            type="text"
+            name="q"
+            value="{{ search_query }}"
+            class="form-control"
+            placeholder="Search products or category"
+          >
+
+          <button
+            class="btn btn-outline-dark"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileFilter">
+            ☰
+          </button>
+
+        </form>
       </div>
+
+      <!-- SEARCH RESULT INFO -->
+      {% if search_query %}
+        <div class="text-muted mb-3">
+          Showing results for "<strong>{{ search_query }}</strong>"
+        </div>
+      {% endif %}
 
       <!-- PRODUCTS GRID -->
       {% if products %}
@@ -67,10 +104,29 @@
         {% endfor %}
       </div>
       {% else %}
-      <div class="alert alert-info">
-        No products found.
-      </div>
+        <div class="no-products-wrapper text-center py-5">
+
+          <div class="no-products-icon mb-3">
+            🔍
+          </div>
+
+          <h5 class="fw-semibold mb-2">
+            No products found
+          </h5>
+
+          <p class="text-muted mb-4">
+            We couldn’t find any products matching your search or filters.<br>
+            Try adjusting them to see more results.
+          </p>
+
+          <a href="{{ url_for('main.product_list') }}"
+            class="btn btn-outline-primary px-4">
+            Clear filters
+          </a>
+
+        </div>
       {% endif %}
+
 
     </main>
   </div>
@@ -86,7 +142,19 @@
   <div class="offcanvas-body">
     <form method="GET" id="mobileFilterForm">
 
-      <h6 class="fw-semibold mb-3">Category</h6>
+      <!-- SEARCH -->
+      <div class="mb-4">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          class="form-control"
+          placeholder="Search products or category"
+        >
+      </div>
+
+      <!-- CATEGORY -->
+      <h6 class="fw-semibold mb-2">Category</h6>
 
       {% for cat in categories %}
       <div class="form-check mb-2">
@@ -104,26 +172,43 @@
       </div>
       {% endfor %}
 
-      {% if search_query %}
-        <input type="hidden" name="q" value="{{ search_query }}">
-      {% endif %}
-
     </form>
   </div>
 </div>
 
-<!-- ================= AUTO APPLY FILTER SCRIPT ================= -->
+<!-- ================= AUTO APPLY FILTER ================= -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+  // ✅ Auto apply category filter
   document.querySelectorAll(".category-filter").forEach(cb => {
     cb.addEventListener("change", function () {
-      const form = cb.closest("form");
-      if (form) form.submit();
+      cb.closest("form").submit();
     });
   });
 
+  // ✅ Clear search button
+  const searchInput = document.getElementById("productSearch");
+  const clearBtn = document.getElementById("clearSearchBtn");
+
+  if (searchInput && clearBtn) {
+
+    function toggleClearBtn() {
+      clearBtn.style.display = searchInput.value.trim() ? "block" : "none";
+    }
+
+    toggleClearBtn();
+    searchInput.addEventListener("input", toggleClearBtn);
+
+    clearBtn.addEventListener("click", function () {
+      searchInput.value = "";
+      toggleClearBtn();
+      searchInput.closest("form").submit();
+    });
+  }
+
 });
 </script>
+
 
 {% endblock %}
