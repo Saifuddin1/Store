@@ -85,22 +85,6 @@
   </div>
 </nav>
 
-<!-- 🔍 SEARCH (MOBILE ONLY) -->
-<div class="d-lg-none bg-dark px-3 py-2">
-  <form method="GET">
-    <div class="input-group">
-      <input class="form-control"
-             type="search"
-             name="q"
-             placeholder="Search products..."
-             value="{{ request.args.get('q', '') }}">
-      <button class="btn btn-outline-light">
-        <i class="bi bi-search"></i>
-      </button>
-    </div>
-  </form>
-</div>
-
 {% include "layout/flash_messages.html" %}
 
 <!-- ================= PAGE CONTENT ================= -->
