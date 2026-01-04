@@ -1,10 +1,9 @@
 {% extends "layout/customer_base.html" %}
-
 {% block title %}My Orders{% endblock %}
-
 {% block content %}
 
-{% set STATUS_COLORS = {
+{# ================= CONFIG ================= #}
+{% set ORDER_STATUS_COLORS = {
   "PLACED": "secondary",
   "CONFIRMED": "primary",
   "PACKED": "info",
@@ -12,199 +11,221 @@
   "OUT_FOR_DELIVERY": "dark",
   "DELIVERED": "success",
   "CANCELLED": "danger",
-  "RETURNED": "danger"
+  "PARTIALLY_CANCELLED": "warning"
 } %}
 
-<h2 class="mb-2">My Orders</h2>
+{% set ITEM_STATUS_LABELS = {
+  "ACTIVE": ("Active", "secondary"),
+  "PLACED": ("Placed", "secondary"),
+  "CONFIRMED": ("Confirmed", "primary"),
+  "PACKED": ("Packed", "info"),
+  "SHIPPED": ("Shipped", "warning"),
+  "OUT_FOR_DELIVERY": ("Out for delivery", "dark"),
+  "DELIVERED": ("Delivered", "success"),
+  "CANCELLED": ("Cancelled", "danger")
+} %}
 
-{% if orders %}
-{% for order in orders %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-6">
 
-<div class="card shadow-sm border border-dark border-2 mb-2">
-  <div class="card-body p-2">
+      <h2 class="mb-4 fw-semibold">My Orders</h2>
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-1">
-      <div class="lh-sm">
-        <strong class="small">Order #{{ order.id }}</strong><br>
-        <small class="text-muted">
-          {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
-        </small>
-      </div>
+      {% if orders %}
+      {% for order in orders %}
 
-      <span class="badge bg-{{ STATUS_COLORS.get(order.status, 'secondary') }} small">
-        {{ order.status.replace("_", " ") }}
-      </span>
-    </div>
+      {% set total_items = order.items|length %}
+      {% set cancelled_count = order.items|selectattr("status","equalto","CANCELLED")|list|length %}
+      {% set delivered_count = order.items|selectattr("status","equalto","DELIVERED")|list|length %}
+      {% set shipped_count = order.items|selectattr("status","equalto","SHIPPED")|list|length %}
 
-    <hr class="my-1">
+      <!-- ================= ORDER CARD ================= -->
+      <div class="card order-card mb-4">
+        <div class="card-body p-3">
 
-    <!-- ITEMS -->
-    <ul class="list-unstyled small mb-1">
-      {% for item in order.items %}
-      <li class="mb-1">
+          <!-- ORDER HEADER -->
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="fw-semibold fs-6">Order #{{ order.id }}</div>
 
-        <div class="d-flex justify-content-between align-items-start lh-sm">
-          <div>
-            <strong>{{ item.product_name }}</strong><br>
-            <small class="text-muted">Qty: {{ item.qty }}</small>
-          </div>
+                <span class="badge rounded-pill bg-{{ ORDER_STATUS_COLORS.get(order.status or 'PLACED') }}">
+                  {% if order.status == "PARTIALLY_CANCELLED" %}
+                    Partially Cancelled
+                  {% else %}
+                    {{ (order.status or "PLACED").replace("_"," ") }}
+                  {% endif %}
+                </span>
 
-          <div class="text-end">
-            <span class="fw-semibold">₹{{ item.subtotal }}</span><br>
+                {% if cancelled_count > 0 %}
+                  <span class="text-muted small">
+                    {{ total_items - cancelled_count }}/{{ total_items }} items active
+                  </span>
+                {% endif %}
+              </div>
 
-            {% if order.status == "DELIVERED" %}
-            <button class="btn btn-sm btn-outline-primary py-0 px-2 mt-1"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#reviewForm{{ order.id }}{{ item.id }}">
-              ⭐ Review
-            </button>
-            {% endif %}
-          </div>
-        </div>
-
-        <!-- REVIEW FORM -->
-        {% if order.status == "DELIVERED" %}
-        <div class="collapse mt-1"
-             id="reviewForm{{ order.id }}{{ item.id }}">
-
-          <form method="POST"
-                action="{{ url_for('main.submit_review_from_order', product_id=item.product_id) }}"
-                class="card card-body bg-light p-2">
-
-            <div class="mb-1">
-              <select name="rating"
-                      class="form-select form-select-sm"
-                      required>
-                <option value="">Rating</option>
-                <option value="5">⭐⭐⭐⭐⭐</option>
-                <option value="4">⭐⭐⭐⭐</option>
-                <option value="3">⭐⭐⭐</option>
-                <option value="2">⭐⭐</option>
-                <option value="1">⭐</option>
-              </select>
-            </div>
-
-            <div class="mb-1">
-              <input type="text"
-                     name="title"
-                     class="form-control form-control-sm"
-                     placeholder="Title">
-            </div>
-
-            <div class="mb-1">
-              <textarea name="comment"
-                        rows="2"
-                        class="form-control form-control-sm"
-                        required
-                        placeholder="Review"></textarea>
+              <div class="text-muted small mt-1">
+                Placed on {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
+              </div>
             </div>
 
             <div class="text-end">
-              <button type="submit"
-                      class="btn btn-sm btn-primary py-0 px-2">
-                Submit
-              </button>
+              <div class="fw-semibold fs-6">₹{{ order.total_amount }}</div>
+              <div class="text-muted small">Total paid</div>
+            </div>
+          </div>
+
+          {% if order.status in ["SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED"] %}
+          <div class="order-tracking mt-3">
+            <strong>Courier:</strong> {{ order.courier_name or "—" }}
+            <span class="mx-1">•</span>
+            <strong>Tracking:</strong> {{ order.tracking_number or "—" }}
+          </div>
+          {% endif %}
+
+          <hr class="my-3">
+
+          <!-- ================= ITEMS ================= -->
+          <div class="items-grid">
+
+            {% for item in order.items %}
+            {% set safe_item_status = item.status or "ACTIVE" %}
+            {% set item_label = ITEM_STATUS_LABELS.get(
+                safe_item_status,
+                (safe_item_status.replace("_"," ").title(), "secondary")
+            ) %}
+
+            <div class="card item-card">
+              <div class="card-body p-3">
+
+                <div class="item-row">
+
+                  <!-- IMAGE -->
+                  <div class="product-thumb">
+                    {% if item.product and item.product.primary_image %}
+                      <img src="{{ url_for('static', filename=item.product.primary_image) }}"
+                           alt="{{ item.product.name }}"
+                           loading="lazy">
+                    {% else %}
+                      <div class="no-image">No Image</div>
+                    {% endif %}
+                  </div>
+
+                  <!-- INFO -->
+                  <div class="item-info">
+
+                    <div class="item-header">
+                      <div class="fw-semibold item-title">
+                        {{ item.product_name }}
+                      </div>
+                      <div class="fw-semibold">₹{{ item.subtotal }}</div>
+                    </div>
+
+                    <div class="text-muted small mt-1">
+                      Qty: {{ item.qty }}
+                    </div>
+
+                    <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                      <span class="badge rounded-pill bg-{{ item_label[1] }}">
+                        {{ item_label[0] }}
+                      </span>
+
+                      {% if safe_item_status == "DELIVERED" %}
+                      <button class="btn btn-sm btn-outline-primary"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#reviewForm{{ order.id }}{{ item.id }}">
+                        Write review
+                      </button>
+                      {% endif %}
+                    </div>
+
+                  </div>
+                </div>
+
+                {% if safe_item_status == "DELIVERED" %}
+                <div class="collapse mt-3"
+                     id="reviewForm{{ order.id }}{{ item.id }}">
+                  <form method="POST"
+                        action="{{ url_for('main.submit_review_from_order', product_id=item.product_id) }}"
+                        class="review-box">
+
+                    <div class="row g-2">
+                      <div class="col-4">
+                        <select name="rating" class="form-select form-select-sm" required>
+                          <option value="">Rating</option>
+                          <option value="5">⭐⭐⭐⭐⭐</option>
+                          <option value="4">⭐⭐⭐⭐</option>
+                          <option value="3">⭐⭐⭐</option>
+                          <option value="2">⭐⭐</option>
+                          <option value="1">⭐</option>
+                        </select>
+                      </div>
+
+                      <div class="col-8">
+                        <input type="text"
+                               name="title"
+                               class="form-control form-control-sm"
+                               placeholder="Review title">
+                      </div>
+
+                      <div class="col-12">
+                        <textarea name="comment"
+                                  rows="2"
+                                  class="form-control form-control-sm"
+                                  required
+                                  placeholder="Write your experience"></textarea>
+                      </div>
+
+                      <div class="text-end">
+                        <button class="btn btn-sm btn-primary">Submit</button>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+                {% endif %}
+
+              </div>
             </div>
 
-          </form>
+            {% endfor %}
+          </div>
+
+          <!-- ORDER ACTIONS -->
+          <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+            <div class="text-muted small">
+              {% if delivered_count %}Delivered: {{ delivered_count }}{% endif %}
+              {% if shipped_count %}<span class="mx-1">•</span>Shipped: {{ shipped_count }}{% endif %}
+              {% if cancelled_count %}<span class="mx-1">•</span>Cancelled: {{ cancelled_count }}{% endif %}
+            </div>
+
+            {% if order.status in ["PLACED", "CONFIRMED", "PARTIALLY_CANCELLED"] %}
+            <a href="{{ url_for('main.cancel_order', order_id=order.id) }}"
+               class="btn btn-sm btn-outline-danger">
+              Cancel items
+            </a>
+            {% endif %}
+          </div>
+
         </div>
-        {% endif %}
-
-      </li>
-      {% endfor %}
-    </ul>
-
-    <!-- TOTAL -->
-    <p class="fw-bold small mb-1">
-      Total: ₹{{ order.total_amount }}
-    </p>
-
-    <!-- TRACKING -->
-    {% if order.status in ["DISPATCHED", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED"] %}
-    <div class="alert alert-info small py-1 px-2 mb-1">
-      <strong>Courier:</strong> {{ order.courier_name or "—" }} |
-      <strong>Tracking:</strong> {{ order.tracking_number or "—" }}
-    </div>
-    {% endif %}
-
-    <!-- TIMELINE -->
-    <div class="order-timeline mt-1">
-
-      {% set steps = ["PLACED", "CONFIRMED", "SHIPPED", "DELIVERED"] %}
-      {% set current_index = steps.index(order.status) if order.status in steps else -1 %}
-
-      {% for step in steps %}
-      {% set step_index = loop.index0 %}
-      <div class="order-step
-           {% if step_index < current_index %}completed{% endif %}
-           {% if step_index == current_index %}active{% endif %}">
-        <div class="dot"></div>
-        <span>{{ step.title() }}</span>
       </div>
+
       {% endfor %}
-
-    </div>
-
-    <!-- ACTION -->
-    <div class="text-end mt-1">
-      {% if order.status in ["PLACED", "CONFIRMED"] %}
-      <a href="{{ url_for('main.cancel_order', order_id=order.id) }}"
-         class="btn btn-sm btn-outline-danger py-0 px-2">
-        Cancel
-      </a>
+      {% else %}
+      <div class="empty-orders text-center py-5">
+        <div class="empty-icon mb-3">🛒</div>
+        <h5 class="fw-semibold mb-2">No orders yet</h5>
+        <p class="text-muted mb-4">
+          Looks like you haven’t placed any orders yet.
+        </p>
+        <a href="{{ url_for('main.home') }}" class="btn btn-primary px-4">
+          Start Shopping
+        </a>
+      </div>
       {% endif %}
-    </div>
 
+    </div>
   </div>
 </div>
-
-{% endfor %}
-{% else %}
-<div class="alert alert-info py-2 px-3">
-  You have not placed any orders yet.
-</div>
-{% endif %}
-
-<!-- COMPACT TIMELINE -->
-<style>
-.order-timeline {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 4px;
-}
-.order-step {
-  flex: 1;
-  text-align: center;
-  font-size: 11px;
-  position: relative;
-}
-.order-step::after {
-  content: "";
-  position: absolute;
-  top: 7px;
-  right: -50%;
-  width: 100%;
-  height: 2px;
-  background: #dee2e6;
-}
-.order-step:last-child::after {
-  display: none;
-}
-.order-step .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin: 0 auto 2px;
-  background: #dee2e6;
-}
-.order-step.completed .dot,
-.order-step.completed::after {
-  background: #198754;
-}
-.order-step.active .dot {
-  background: #0d6efd;
-}
-</style>
 
 {% endblock %}

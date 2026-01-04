@@ -292,6 +292,11 @@ class OrderItem(db.Model):
         default="PLACED"
     )
 
+    product = db.relationship(
+        "Product",
+        lazy="joined"
+    )
+
     order = db.relationship(
         "Order",
         back_populates="items"

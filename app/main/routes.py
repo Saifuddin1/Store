@@ -48,6 +48,7 @@ def orders():
         .all()
     )
 
+
     return render_template(
         "store/my_orders.html",
         orders=orders
