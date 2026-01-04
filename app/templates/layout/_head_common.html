@@ -1,0 +1,20 @@
+<!-- ================= COMMON META ================= -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ================= FAVICON ================= -->
+<link rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='images/favicon.png') }}">
+
+<!-- Standard favicon -->
+<link rel="icon" type="image/png" sizes="32x32"
+      href="{{ url_for('static', filename='images/favicon.png') }}">
+
+<!-- Apple devices -->
+<link rel="apple-touch-icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}">
+
+
+<!-- ================= DEFAULT TITLE BLOCK ================= -->
+{% block extra_head %}{% endblock %}
