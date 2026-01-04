@@ -160,10 +160,67 @@ def move_wishlist_to_cart(product_id):
     flash("Moved to cart 🛒", "success")
     return redirect(url_for("main.wishlist"))
 
+# OLD
+# @main_bp.route("/products")
+# def product_list():
+#     q = request.args.get("q", "").strip()
+
+#     products_query = (
+#         Product.query
+#         .join(Category)
+#         .filter(
+#             Product.is_active == True,
+#             Category.is_active == True
+#         )
+#     )
+
+#     # 🔍 SEARCH LOGIC
+#     if q:
+#         products_query = products_query.filter(
+#             or_(
+#                 Product.name.ilike(f"%{q}%"),
+#                 Category.name.ilike(f"%{q}%")
+#             )
+#         )
+
+#     products = (
+#         products_query
+#         .order_by(Product.created_at.desc())
+#         .all()
+#     )
+
+#     # ⭐ Rating summary (avg + count)
+#     ratings = (
+#         db.session.query(
+#             ProductReview.product_id,
+#             func.avg(ProductReview.rating).label("avg_rating"),
+#             func.count(ProductReview.id).label("total_reviews")
+#         )
+#         .filter(ProductReview.is_approved == True)
+#         .group_by(ProductReview.product_id)
+#         .all()
+#     )
+
+#     rating_map = {
+#         r.product_id: {
+#             "avg": round(float(r.avg_rating), 1),
+#             "count": r.total_reviews
+#         }
+#         for r in ratings
+#     }
+
+#     return render_template(
+#         "store/products.html",
+#         products=products,
+#         rating_map=rating_map,
+#         search_query=q  # optional UX improvement
+#     )
+
 
 @main_bp.route("/products")
 def product_list():
     q = request.args.get("q", "").strip()
+    category_ids = request.args.getlist("categories")  # 👈 NEW
 
     products_query = (
         Product.query
@@ -174,7 +231,7 @@ def product_list():
         )
     )
 
-    # 🔍 SEARCH LOGIC
+    # 🔍 SEARCH
     if q:
         products_query = products_query.filter(
             or_(
@@ -183,13 +240,19 @@ def product_list():
             )
         )
 
+    # 🧩 CATEGORY FILTER
+    if category_ids:
+        products_query = products_query.filter(
+            Product.category_id.in_(category_ids)
+        )
+
     products = (
         products_query
         .order_by(Product.created_at.desc())
         .all()
     )
 
-    # ⭐ Rating summary (avg + count)
+    # ⭐ RATINGS (UNCHANGED)
     ratings = (
         db.session.query(
             ProductReview.product_id,
@@ -209,12 +272,18 @@ def product_list():
         for r in ratings
     }
 
+    # 📦 ALL ACTIVE CATEGORIES (FOR FILTER)
+    categories = Category.query.filter_by(is_active=True).all()
+
     return render_template(
         "store/products.html",
         products=products,
         rating_map=rating_map,
-        search_query=q  # optional UX improvement
+        categories=categories,
+        selected_categories=category_ids,
+        search_query=q
     )
+
 
 
 @main_bp.route("/category/<slug>")

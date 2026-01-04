@@ -1,53 +1,129 @@
 {% extends "layout/customer_base.html" %}
-
 {% block title %}All Products | My Store{% endblock %}
 
 {% block content %}
 
-<!-- ================= PRODUCTS ================= -->
-{% if products %}
-<div class="row">
+<div class="container-fluid">
+  <div class="row">
 
-  {% for p in products %}
-  <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
+    <!-- ================= DESKTOP FILTER (LEFT) ================= -->
+    <aside class="col-lg-3 d-none d-lg-block border-end">
+      <form method="GET" id="desktopFilterForm" class="p-3">
 
-        {% include "store/_product_card.html" %}
+        <h6 class="fw-semibold mb-3">Filters</h6>
 
+        <div class="mb-4">
+          <h6 class="fw-semibold mb-2">Category</h6>
+
+          {% for cat in categories %}
+          <div class="form-check mb-2">
+            <input
+              class="form-check-input category-filter"
+              type="checkbox"
+              name="categories"
+              value="{{ cat.id }}"
+              id="cat{{ cat.id }}"
+              {% if cat.id|string in selected_categories %}checked{% endif %}
+            >
+            <label class="form-check-label" for="cat{{ cat.id }}">
+              {{ cat.name }}
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% if search_query %}
+          <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+
+      </form>
+    </aside>
+
+    <!-- ================= PRODUCTS AREA ================= -->
+    <main class="col-lg-9 col-12">
+
+      <!-- MOBILE FILTER BAR -->
+      <div class="d-lg-none d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-outline-dark btn-sm"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mobileFilter">
+          ☰ Filters
+        </button>
+
+        {% if search_query %}
+          <span class="text-muted small">
+            Results for "{{ search_query }}"
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- PRODUCTS GRID -->
+      {% if products %}
+      <div class="row">
+        {% for p in products %}
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
+          {% include "store/_product_card.html" %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="alert alert-info">
+        No products found.
+      </div>
+      {% endif %}
+
+    </main>
   </div>
-  {% endfor %}
-
 </div>
-{% else %}
-<div class="alert alert-info">
-  No products available.
+
+<!-- ================= MOBILE FILTER OFFCANVAS ================= -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilter">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Filters</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form method="GET" id="mobileFilterForm">
+
+      <h6 class="fw-semibold mb-3">Category</h6>
+
+      {% for cat in categories %}
+      <div class="form-check mb-2">
+        <input
+          class="form-check-input category-filter"
+          type="checkbox"
+          name="categories"
+          value="{{ cat.id }}"
+          id="mcat{{ cat.id }}"
+          {% if cat.id|string in selected_categories %}checked{% endif %}
+        >
+        <label class="form-check-label" for="mcat{{ cat.id }}">
+          {{ cat.name }}
+        </label>
+      </div>
+      {% endfor %}
+
+      {% if search_query %}
+        <input type="hidden" name="q" value="{{ search_query }}">
+      {% endif %}
+
+    </form>
+  </div>
 </div>
-{% endif %}
 
-<!-- ================= STYLES ================= -->
-<style>
-.product-card:hover {
-  transform: translateY(-6px);
-  transition: 0.2s ease;
-}
+<!-- ================= AUTO APPLY FILTER SCRIPT ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
-.badge {
-  font-size: 0.75rem;
-}
+  document.querySelectorAll(".category-filter").forEach(cb => {
+    cb.addEventListener("change", function () {
+      const form = cb.closest("form");
+      if (form) form.submit();
+    });
+  });
 
-/* Mobile tuning */
-@media (max-width: 576px) {
-  h2 {
-    font-size: 1.5rem;
-  }
-
-  .card-title {
-    font-size: 0.95rem;
-  }
-
-  .btn {
-    font-size: 0.85rem;
-  }
-}
-</style>
+});
+</script>
 
 {% endblock %}
