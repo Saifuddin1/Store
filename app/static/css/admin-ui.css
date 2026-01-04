@@ -92,3 +92,106 @@ body {
 .admin-logout:hover {
   color: #ffda6a !important;
 }
+
+
+/* ================= CANCEL ORDER ================= */
+
+.order-summary-card,
+.cancel-card{
+  border-radius: 14px;
+}
+
+/* GRID */
+.cancel-items-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+/* CARD */
+.cancel-item-card{
+  position: relative;
+  border: 1px solid #e3e6ea;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: all .15s ease;
+  overflow: hidden;
+}
+
+.cancel-item-card:hover{
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+}
+
+.cancel-item-card.disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* CHECKBOX */
+.item-checkbox{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  z-index: 2;
+}
+
+/* SELECTED */
+.cancel-item-card:has(.item-checkbox:checked){
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+/* IMAGE */
+.cancel-product-thumb{
+  width: 100%;
+  height: 100px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancel-product-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image{
+  font-size: 12px;
+  color: #999;
+}
+
+/* INFO */
+.item-content{
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-name{
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.item-meta{
+  font-size: 11px;
+  color: #6c757d;
+}
+
+.item-price{
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* MOBILE */
+@media (max-width: 576px){
+  .cancel-items-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

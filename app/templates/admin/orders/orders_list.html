@@ -73,6 +73,8 @@
               <span class="badge bg-dark">Out for Delivery</span>
             {% elif o.status == "DELIVERED" %}
               <span class="badge bg-success">Delivered</span>
+            {% elif o.status == "PARTIALLY_CANCELLED" %}
+              <span class="badge bg-warning text-dark"> Partially Cancelled</span>
             {% elif o.status == "CANCELLED" %}
               <span class="badge bg-danger">Cancelled</span>
             {% elif o.status == "RETURNED" %}
