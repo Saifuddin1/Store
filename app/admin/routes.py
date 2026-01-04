@@ -26,7 +26,7 @@ from app import db
 from slugify import slugify
 import os
 from werkzeug.utils import secure_filename
-from app.utils.email import send_order_cancel_email, send_stock_available_email
+from app.utils.email import send_order_cancellation_email, send_stock_available_email
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from sqlalchemy.orm.attributes import flag_modified
@@ -416,9 +416,11 @@ def update_order_status(order_id):
 
     try:
         old_order_status = order.status
+        cancelled_items = []   # 👈 TRACK ONLY CANCELLED ITEMS
 
-        # 🔴 ADMIN ITEM-LEVEL CANCEL
+        # ================= ITEM LEVEL CANCELLATION =================
         if new_status == "CANCELLED":
+
             if not item_ids:
                 flash("Please select at least one item to cancel", "danger")
                 return redirect(url_for("admin.order_detail", order_id=order.id))
@@ -429,13 +431,14 @@ def update_order_status(order_id):
                 if not item or item.status in ["CANCELLED", "SHIPPED", "DELIVERED"]:
                     continue
 
-                # restore stock
+                # Restore stock
                 product = Product.query.get(item.product_id)
                 if product:
                     product.stock_quantity += item.qty
 
                 old_item_status = item.status
                 item.status = "CANCELLED"
+                cancelled_items.append(item)
 
                 db.session.add(
                     OrderStatusHistory(
@@ -447,14 +450,15 @@ def update_order_status(order_id):
                     )
                 )
 
-            # 🔁 recalc order
-            recalc_order_status(order)
+            # 🔁 Recalculate order
+            recalc_order_status(order)   # sets PLACED / PARTIALLY_CANCELLED / CANCELLED
             recalc_order_total(order)
 
+        # ================= NORMAL ORDER STATUS CHANGE =================
         else:
             order.status = new_status
 
-        # 🧾 ORDER STATUS HISTORY
+        # ================= ORDER STATUS HISTORY =================
         if old_order_status != order.status:
             db.session.add(
                 OrderStatusHistory(
@@ -468,11 +472,12 @@ def update_order_status(order_id):
 
         db.session.commit()
 
-        # 🔔 Notify user
-        if new_status == "CANCELLED":
-            send_order_cancel_email(order, remark)
+        # ================= EMAIL NOTIFICATION =================
+        if cancelled_items:
+            send_order_cancellation_email(order, cancelled_items, remark)
 
-        flash(f"Order updated successfully", "success")
+
+        flash("Order updated successfully", "success")
 
     except Exception as e:
         db.session.rollback()
