@@ -38,9 +38,27 @@ def dashboard():
     return render_template("store/user_dashboard.html")
 
 
+# @main_bp.route("/orders")
+# @login_required
+# def orders():
+#     orders = (
+#         Order.query
+#         .filter_by(user_id=current_user.id)
+#         .order_by(Order.created_at.desc())
+#         .all()
+#     )
+
+
+#     return render_template(
+#         "store/my_orders.html",
+#         orders=orders
+#     )
+
+
 @main_bp.route("/orders")
 @login_required
 def orders():
+
     orders = (
         Order.query
         .filter_by(user_id=current_user.id)
@@ -48,10 +66,18 @@ def orders():
         .all()
     )
 
+    # ✅ Products already reviewed by this user
+    reviewed_product_ids = {
+        r.product_id
+        for r in ProductReview.query
+            .filter_by(user_id=current_user.id)
+            .all()
+    }
 
     return render_template(
         "store/my_orders.html",
-        orders=orders
+        orders=orders,
+        reviewed_product_ids=reviewed_product_ids
     )
 
 
