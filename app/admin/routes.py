@@ -270,6 +270,39 @@ def delete_product(product_id):
     return redirect(url_for("admin.products"))
 
 
+from PIL import Image
+
+def prepare_product_image(
+    input_path,
+    output_path,
+    width=1200,
+    height=1600,
+    bg=(255, 255, 255)
+):
+    """
+    Fits image into 3:4 frame WITHOUT cropping.
+    Adds padding if needed.
+    """
+
+    img = Image.open(input_path).convert("RGBA")
+    iw, ih = img.size
+
+    scale = min(width / iw, height / ih)
+    nw, nh = int(iw * scale), int(ih * scale)
+
+    img = img.resize((nw, nh), Image.LANCZOS)
+
+    canvas = Image.new("RGBA", (width, height), bg + (255,))
+    x = (width - nw) // 2
+    y = (height - nh) // 2
+
+    canvas.paste(img, (x, y), img)
+
+    # Save as optimized JPG
+    canvas.convert("RGB").save(output_path, quality=92, optimize=True)
+
+
+
 @admin_bp.route("/products/<int:product_id>/images", methods=["GET", "POST"])
 @login_required
 @admin_required
@@ -295,7 +328,18 @@ def product_images(product_id):
         os.makedirs(upload_dir, exist_ok=True)
 
         file_path = os.path.join(upload_dir, filename)
+
+        # Save original upload temporarily
         file.save(file_path)
+
+        # 🔥 AUTO-CONVERT to 3:4 product image
+        prepare_product_image(
+            input_path=file_path,
+            output_path=file_path,   # overwrite safely
+            width=1200,
+            height=1600
+        )
+
 
         # If no primary image exists, make this primary
         has_primary = ProductImage.query.filter_by(
