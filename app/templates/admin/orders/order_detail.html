@@ -1,5 +1,4 @@
 {% extends "layout/admin_base.html" %}
-
 {% block title %}Order #{{ order.id }} | Admin{% endblock %}
 
 {% block admin_content %}
@@ -10,25 +9,86 @@
 <div class="card shadow-sm mb-4">
   <div class="card-body">
 
-    <p>
-      <strong>Status:</strong>
-      <span class="badge bg-info">
-        {{ order.status.replace("_", " ") }}
-      </span>
-    </p>
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
 
-    <p>
-      <strong>Customer:</strong> {{ order.user.email }} <br>
-      <strong>Placed On:</strong>
-      {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
-    </p>
+      <!-- LEFT : ORDER INFO -->
+      <div>
+        <p class="mb-1">
+          <strong>Status:</strong>
+          <span class="badge bg-info">
+            {{ order.status.replace("_", " ") }}
+          </span>
+        </p>
 
-    <p>
-      <strong>Total Amount:</strong> ₹{{ order.total_amount }}
-    </p>
+        <p class="mb-1">
+          <strong>Customer:</strong> {{ order.user.email }}
+        </p>
+
+        <p class="mb-1">
+          <strong>Placed On:</strong>
+          {{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}
+        </p>
+
+        <p class="mb-1">
+          <strong>Total Items:</strong>
+          {{ order.items|length }}
+        </p>
+
+        <p class="mb-0">
+          <strong>Total Amount:</strong>
+          ₹{{ order.total_amount }}
+        </p>
+      </div>
+
+      <!-- RIGHT : ADMIN ACTIONS -->
+      <div class="d-flex flex-column align-items-end gap-2">
+
+        {% if order.status == "PLACED" %}
+          <form method="POST"
+                action="{{ url_for('admin.update_order_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="CONFIRMED">
+            <button class="btn btn-sm btn-primary">
+              ✅ Confirm Order
+            </button>
+          </form>
+        {% endif %}
+
+        {% if order.status in ["CONFIRMED", "PARTIALLY_CANCELLED"] %}
+          <form method="POST"
+                action="{{ url_for('admin.update_order_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="PACKED">
+            <button class="btn btn-sm btn-warning">
+              📦 Mark as Packed
+            </button>
+          </form>
+        {% endif %}
+
+        {% if order.status == "PACKED" %}
+          <form method="POST"
+                action="{{ url_for('admin.update_order_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="SHIPPED">
+            <button class="btn btn-sm btn-info">
+              🚚 Dispatch Order
+            </button>
+          </form>
+        {% endif %}
+
+        {% if order.status == "SHIPPED" %}
+          <form method="POST"
+                action="{{ url_for('admin.update_order_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="DELIVERED">
+            <button class="btn btn-sm btn-success">
+              📬 Mark as Delivered
+            </button>
+          </form>
+        {% endif %}
+
+      </div>
+    </div>
 
   </div>
 </div>
+
 
 <!-- ================= ADMIN ITEM-LEVEL CANCEL ================= -->
 {% if order.status in ["PLACED", "CONFIRMED", "PARTIALLY_CANCELLED"] %}
@@ -45,7 +105,6 @@
 
       <input type="hidden" name="status" value="CANCELLED">
 
-      <!-- ITEM GRID (SELECTABLE) -->
       <div class="cancel-items-grid mb-4">
 
         {% for item in order.items %}
@@ -96,7 +155,6 @@
 
       </div>
 
-      <!-- REASON -->
       <div class="mb-3">
         <label class="form-label fw-semibold">
           Cancellation Reason <span class="text-danger">*</span>
