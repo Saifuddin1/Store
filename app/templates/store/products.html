@@ -7,28 +7,28 @@
   <div class="row">
 
     <!-- ================= DESKTOP FILTER ================= -->
-    <aside class="col-lg-3 d-none d-lg-block">
+    <aside class="col-lg-3 d-none d-lg-block border-end">
 
-      <form method="GET" id="desktopFilterForm" class="product-filter">
+      <form method="GET" id="desktopFilterForm" class="product-filter p-3">
 
         <!-- SEARCH -->
-        <div class="filter-block">
-          <h6 class="filter-title">Search</h6>
+        <div class="filter-block mb-4">
+          <h6 class="fw-semibold mb-2">Search</h6>
 
-          <div class="search-wrapper">
+          <div class="position-relative">
             <input
               type="text"
               name="q"
               value="{{ search_query }}"
-              class="form-control form-control-sm filter-search"
+              class="form-control form-control-sm pe-4"
               placeholder="Search products or category"
               id="productSearch">
 
             <button
               type="button"
-              class="clear-search"
               id="clearSearchBtn"
-              aria-label="Clear search">
+              class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-muted"
+              style="display:none; text-decoration:none;">
               &times;
             </button>
           </div>
@@ -36,7 +36,7 @@
 
         <!-- CATEGORY -->
         <div class="filter-block">
-          <h6 class="filter-title">Category</h6>
+          <h6 class="fw-semibold mb-2">Category</h6>
 
           {% for cat in categories %}
           <div class="form-check mb-2">
@@ -54,26 +54,15 @@
           {% endfor %}
         </div>
 
-        <!-- CLEAR FILTERS (DESKTOP) -->
-        {% if search_query or selected_categories or selected_sort != "newest" %}
-        <div class="filter-actions mt-3">
-          <a href="{{ url_for('main.product_list') }}"
-             class="btn btn-sm btn-outline-secondary w-100">
-            ✕ Clear all filters
-          </a>
-        </div>
-        {% endif %}
-
       </form>
     </aside>
 
     <!-- ================= PRODUCTS AREA ================= -->
-    <main class="col-lg-9 col-12">
+    <main class="col-lg-9 col-12 p-3">
 
       <!-- MOBILE SEARCH + FILTER -->
       <div class="d-lg-none mb-3">
         <form method="GET" class="d-flex gap-2">
-
           <input
             type="text"
             name="q"
@@ -82,8 +71,8 @@
             placeholder="Search products or category">
 
           <button
-            class="btn btn-outline-dark"
             type="button"
+            class="btn btn-outline-dark"
             data-bs-toggle="offcanvas"
             data-bs-target="#mobileFilter">
             ☰
@@ -91,11 +80,17 @@
         </form>
       </div>
 
-      <!-- SORT BAR -->
-      <div class="d-flex justify-content-end mb-3">
-        <form method="GET"
-              id="sortForm"
-              class="sort-bar d-flex align-items-center gap-2">
+      <!-- SORT + CLEAR -->
+      <div class="d-flex justify-content-end align-items-center mb-3 gap-2 flex-wrap">
+
+        {% if search_query or selected_categories or selected_sort != "newest" %}
+          <a href="{{ url_for('main.product_list') }}"
+             class="btn btn-sm btn-outline-secondary">
+            Clear
+          </a>
+        {% endif %}
+
+        <form method="GET" class="d-flex align-items-center">
 
           {% if search_query %}
             <input type="hidden" name="q" value="{{ search_query }}">
@@ -105,12 +100,13 @@
             <input type="hidden" name="categories" value="{{ cat }}">
           {% endfor %}
 
-          <label class="sort-label mb-0">Sort by</label>
-
           <select
             name="sort"
-            class="form-select form-select-sm sort-select"
-            onchange="this.form.submit()">
+            class="form-select form-select-sm"
+            onchange="this.form.submit()"
+            style="min-width:180px;">
+
+            <option disabled>Sort by</option>
 
             <option value="newest"
               {% if selected_sort == "newest" %}selected{% endif %}>
@@ -131,6 +127,7 @@
               {% if selected_sort == "rating" %}selected{% endif %}>
               Customer Rating
             </option>
+
           </select>
         </form>
       </div>
@@ -152,15 +149,14 @@
         {% endfor %}
       </div>
       {% else %}
-        <div class="no-products-wrapper text-center py-5">
-          <div class="no-products-icon mb-3">🔍</div>
-          <h5 class="fw-semibold mb-2">No products found</h5>
-          <p class="text-muted mb-4">
-            We couldn’t find any products matching your search or filters.<br>
-            Try adjusting them to see more results.
+        <div class="text-center py-5">
+          <div class="fs-1 mb-2">🔍</div>
+          <h5 class="fw-semibold">No products found</h5>
+          <p class="text-muted mb-3">
+            Try adjusting your search or filters.
           </p>
           <a href="{{ url_for('main.product_list') }}"
-             class="btn btn-outline-primary px-4">
+             class="btn btn-outline-primary btn-sm">
             Clear filters
           </a>
         </div>
@@ -178,7 +174,7 @@
   </div>
 
   <div class="offcanvas-body">
-    <form method="GET" id="mobileFilterForm">
+    <form method="GET">
 
       <!-- SEARCH -->
       <div class="mb-4">
@@ -192,14 +188,31 @@
 
       <!-- SORT -->
       <div class="mb-4">
-        <label class="fw-semibold mb-2">Sort by</label>
         <select name="sort"
                 class="form-select"
                 onchange="this.form.submit()">
-          <option value="newest" {% if selected_sort == "newest" %}selected{% endif %}>Newest</option>
-          <option value="price_low" {% if selected_sort == "price_low" %}selected{% endif %}>Price: Low → High</option>
-          <option value="price_high" {% if selected_sort == "price_high" %}selected{% endif %}>Price: High → Low</option>
-          <option value="rating" {% if selected_sort == "rating" %}selected{% endif %}>Customer Rating</option>
+
+          <option disabled>Sort by</option>
+
+          <option value="newest"
+            {% if selected_sort == "newest" %}selected{% endif %}>
+            Newest
+          </option>
+
+          <option value="price_low"
+            {% if selected_sort == "price_low" %}selected{% endif %}>
+            Price: Low → High
+          </option>
+
+          <option value="price_high"
+            {% if selected_sort == "price_high" %}selected{% endif %}>
+            Price: High → Low
+          </option>
+
+          <option value="rating"
+            {% if selected_sort == "rating" %}selected{% endif %}>
+            Customer Rating
+          </option>
         </select>
       </div>
 
@@ -207,31 +220,18 @@
       <h6 class="fw-semibold mb-2">Category</h6>
       {% for cat in categories %}
       <div class="form-check mb-2">
-        <input class="form-check-input category-filter"
-               type="checkbox"
-               name="categories"
-               value="{{ cat.id }}"
-               id="mcat{{ cat.id }}"
-               {% if cat.id|string in selected_categories %}checked{% endif %}>
+        <input
+          class="form-check-input category-filter"
+          type="checkbox"
+          name="categories"
+          value="{{ cat.id }}"
+          id="mcat{{ cat.id }}"
+          {% if cat.id|string in selected_categories %}checked{% endif %}>
         <label class="form-check-label" for="mcat{{ cat.id }}">
           {{ cat.name }}
         </label>
       </div>
       {% endfor %}
-
-      <!-- MOBILE ACTIONS -->
-      <div class="mt-4 d-grid gap-2">
-        <a href="{{ url_for('main.product_list') }}"
-           class="btn btn-outline-secondary">
-          ✕ Clear all filters
-        </a>
-
-        <button class="btn btn-primary"
-                type="submit"
-                data-bs-dismiss="offcanvas">
-          Apply Filters
-        </button>
-      </div>
 
     </form>
   </div>
@@ -241,25 +241,26 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+  // Auto-submit category filters
   document.querySelectorAll(".category-filter").forEach(cb => {
     cb.addEventListener("change", () => cb.closest("form").submit());
   });
 
-  const searchInput = document.getElementById("productSearch");
+  // Clear search
+  const input = document.getElementById("productSearch");
   const clearBtn = document.getElementById("clearSearchBtn");
 
-  if (searchInput && clearBtn) {
-    function toggleClear() {
-      clearBtn.style.display = searchInput.value.trim() ? "block" : "none";
-    }
-    toggleClear();
-    searchInput.addEventListener("input", toggleClear);
-    clearBtn.addEventListener("click", function () {
-      searchInput.value = "";
-      toggleClear();
-      searchInput.closest("form").submit();
+  if (input && clearBtn) {
+    const toggle = () => clearBtn.style.display = input.value ? "block" : "none";
+    toggle();
+    input.addEventListener("input", toggle);
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      input.closest("form").submit();
     });
   }
+
 });
 </script>
 
