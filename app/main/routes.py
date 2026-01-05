@@ -160,10 +160,11 @@ def move_wishlist_to_cart(product_id):
     flash("Moved to cart 🛒", "success")
     return redirect(url_for("main.wishlist"))
 
-# OLD
+
 # @main_bp.route("/products")
 # def product_list():
 #     q = request.args.get("q", "").strip()
+#     category_ids = request.args.getlist("categories")  # 👈 NEW
 
 #     products_query = (
 #         Product.query
@@ -174,7 +175,7 @@ def move_wishlist_to_cart(product_id):
 #         )
 #     )
 
-#     # 🔍 SEARCH LOGIC
+#     # 🔍 SEARCH
 #     if q:
 #         products_query = products_query.filter(
 #             or_(
@@ -183,13 +184,19 @@ def move_wishlist_to_cart(product_id):
 #             )
 #         )
 
+#     # 🧩 CATEGORY FILTER
+#     if category_ids:
+#         products_query = products_query.filter(
+#             Product.category_id.in_(category_ids)
+#         )
+
 #     products = (
 #         products_query
 #         .order_by(Product.created_at.desc())
 #         .all()
 #     )
 
-#     # ⭐ Rating summary (avg + count)
+#     # ⭐ RATINGS (UNCHANGED)
 #     ratings = (
 #         db.session.query(
 #             ProductReview.product_id,
@@ -209,29 +216,44 @@ def move_wishlist_to_cart(product_id):
 #         for r in ratings
 #     }
 
+#     # 📦 ALL ACTIVE CATEGORIES (FOR FILTER)
+#     categories = Category.query.filter_by(is_active=True).all()
+
 #     return render_template(
 #         "store/products.html",
 #         products=products,
 #         rating_map=rating_map,
-#         search_query=q  # optional UX improvement
+#         categories=categories,
+#         selected_categories=category_ids,
+#         search_query=q
 #     )
 
 
 @main_bp.route("/products")
 def product_list():
-    q = request.args.get("q", "").strip()
-    category_ids = request.args.getlist("categories")  # 👈 NEW
 
+    # =======================
+    # QUERY PARAMS
+    # =======================
+    q = request.args.get("q", "").strip()
+    category_ids = request.args.getlist("categories")
+    sort = request.args.get("sort", "newest")
+
+    # =======================
+    # BASE QUERY
+    # =======================
     products_query = (
         Product.query
         .join(Category)
         .filter(
-            Product.is_active == True,
-            Category.is_active == True
+            Product.is_active.is_(True),
+            Category.is_active.is_(True)
         )
     )
 
-    # 🔍 SEARCH
+    # =======================
+    # SEARCH (NAME + CATEGORY)
+    # =======================
     if q:
         products_query = products_query.filter(
             or_(
@@ -240,26 +262,54 @@ def product_list():
             )
         )
 
-    # 🧩 CATEGORY FILTER
+    # =======================
+    # CATEGORY FILTER
+    # =======================
     if category_ids:
         products_query = products_query.filter(
             Product.category_id.in_(category_ids)
         )
 
-    products = (
-        products_query
-        .order_by(Product.created_at.desc())
-        .all()
-    )
+    # =======================
+    # SORTING (MYSQL SAFE)
+    # =======================
+    if sort == "price_low":
+        products_query = products_query.order_by(Product.price.asc())
 
-    # ⭐ RATINGS (UNCHANGED)
+    elif sort == "price_high":
+        products_query = products_query.order_by(Product.price.desc())
+
+    elif sort == "rating":
+        avg_rating = func.avg(ProductReview.rating)
+
+        products_query = (
+            products_query
+            .outerjoin(ProductReview)
+            .group_by(Product.id)
+            .order_by(
+                avg_rating.is_(None),   # 👈 NULLs last
+                avg_rating.desc()
+            )
+        )
+
+    else:  # newest
+        products_query = products_query.order_by(Product.created_at.desc())
+
+    # =======================
+    # EXECUTE QUERY
+    # =======================
+    products = products_query.all()
+
+    # =======================
+    # RATING SUMMARY (UI)
+    # =======================
     ratings = (
         db.session.query(
             ProductReview.product_id,
             func.avg(ProductReview.rating).label("avg_rating"),
             func.count(ProductReview.id).label("total_reviews")
         )
-        .filter(ProductReview.is_approved == True)
+        .filter(ProductReview.is_approved.is_(True))
         .group_by(ProductReview.product_id)
         .all()
     )
@@ -272,17 +322,24 @@ def product_list():
         for r in ratings
     }
 
-    # 📦 ALL ACTIVE CATEGORIES (FOR FILTER)
+    # =======================
+    # ACTIVE CATEGORIES
+    # =======================
     categories = Category.query.filter_by(is_active=True).all()
 
+    # =======================
+    # RENDER
+    # =======================
     return render_template(
         "store/products.html",
         products=products,
         rating_map=rating_map,
         categories=categories,
         selected_categories=category_ids,
-        search_query=q
+        search_query=q,
+        selected_sort=sort
     )
+
 
 
 
