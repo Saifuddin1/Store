@@ -1,18 +1,17 @@
 <div class="card product-card h-100 shadow-sm position-relative">
 
-<!-- ❤️ WISHLIST -->
-{% if current_user.is_authenticated %}
-  <form method="POST"
-        action="{{ url_for('main.toggle_wishlist', product_id=p.id) }}"
-        class="wishlist-form">
-    <button type="submit"
-            class="wishlist-btn {% if p.id in wishlist_ids %}active{% endif %}"
-            aria-label="Wishlist">
-      <i class="bi {% if p.id in wishlist_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
-    </button>
-  </form>
-{% endif %}
-
+  <!-- ❤️ WISHLIST -->
+  {% if current_user.is_authenticated %}
+    <form method="POST"
+          action="{{ url_for('main.toggle_wishlist', product_id=p.id) }}"
+          class="wishlist-form">
+      <button type="submit"
+              class="wishlist-btn {% if p.id in wishlist_ids %}active{% endif %}"
+              aria-label="Wishlist">
+        <i class="bi {% if p.id in wishlist_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+      </button>
+    </form>
+  {% endif %}
 
   <!-- IMAGE -->
   <div class="position-relative">
@@ -44,8 +43,37 @@
 
   <!-- BODY -->
   <div class="card-body d-flex flex-column">
+
+    <!-- PRODUCT NAME -->
     <h6 class="card-title mb-1">{{ p.name }}</h6>
 
+    <!-- ⭐ RATING -->
+    <div class="d-flex align-items-center mb-1 small rating-row">
+
+      {% set rating = rating_map.get(p.id) %}
+
+      {% if rating %}
+        <!-- Filled star + rating -->
+        <span class="text-warning me-1">
+          ⭐ {{ rating.avg }}
+        </span>
+        <span class="text-muted">
+          ({{ rating.count }})
+        </span>
+      {% else %}
+        <!-- Empty stars (real e-commerce style) -->
+        <span class="text-muted me-1">
+          ☆ ☆ ☆ ☆ ☆
+        </span>
+        <span class="text-muted">
+          (0)
+        </span>
+      {% endif %}
+
+    </div>
+
+
+    <!-- PRICE -->
     <p class="mb-2 fw-bold">
       {% if p.final_price < p.price %}
         ₹{{ p.final_price }}
@@ -55,10 +83,11 @@
       {% endif %}
     </p>
 
+    <!-- CTA -->
     <a href="{{ url_for('main.product_detail', slug=p.slug) }}"
        class="btn btn-outline-primary mt-auto w-100">
       View Product
     </a>
-  </div>
 
+  </div>
 </div>
