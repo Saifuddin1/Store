@@ -142,23 +142,61 @@
       </div>
     </div>
 
-    <!-- REVIEWS -->
-    <div class="mt-5">
-      <h4 class="mb-3">Customer Reviews</h4>
+<!-- ================= REVIEWS ================= -->
+<div class="mt-5">
 
-      {% for r in reviews %}
+  <h4 class="mb-3">Customer Reviews</h4>
+
+  {% if reviews %}
+    {% for r in reviews %}
       <div class="card mb-3 shadow-sm">
         <div class="card-body">
-          <strong>{{ reviewer_names.get(r.user_id, "Customer") }}</strong>
+
+          <!-- HEADER -->
+          <div class="d-flex justify-content-between align-items-start flex-wrap mb-1">
+            <div>
+              <strong class="me-2">
+                {{ reviewer_names.get(r.user_id, "Customer") }}
+              </strong>
+
+              <span class="badge bg-success">
+                Verified Buyer
+              </span>
+            </div>
+
+            <small class="text-muted">
+              {{ r.created_at.strftime("%d %b %Y") }}
+            </small>
+          </div>
+
+          <!-- STARS -->
           <div class="mb-1">
             {% for i in range(r.rating) %}⭐{% endfor %}
             {% for i in range(5 - r.rating) %}☆{% endfor %}
           </div>
-          <p class="text-muted mb-0">{{ r.comment }}</p>
+
+          <!-- TITLE -->
+          {% if r.title %}
+            <div class="fw-semibold mb-1">
+              {{ r.title }}
+            </div>
+          {% endif %}
+
+          <!-- COMMENT -->
+          <p class="mb-0 text-muted">
+            {{ r.comment }}
+          </p>
+
         </div>
       </div>
-      {% endfor %}
-    </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No reviews yet.</p>
+  {% endif %}
+
+</div>
+<!-- =============== END REVIEWS ================= -->
+
 
   </div>
 </div>
