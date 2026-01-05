@@ -951,3 +951,20 @@ body {
 .no-products-wrapper p{
   font-size: 14px;
 }
+
+
+/* ===== SORT BAR FIX ===== */
+
+.sort-bar {
+  white-space: nowrap;      /* ⛔ prevent wrapping */
+}
+
+.sort-label {
+  font-size: 13px;
+  color: #6c757d;
+  white-space: nowrap;
+}
+
+.sort-select {
+  min-width: 170px;         /* ✅ keeps layout stable */
+}

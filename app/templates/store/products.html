@@ -84,7 +84,9 @@
       <!-- SORT BAR -->
       <div class="d-flex justify-content-end align-items-center mb-3">
 
-        <form method="GET" id="sortForm" class="d-flex align-items-center gap-2">
+        <form method="GET"
+        id="sortForm"
+        class="sort-bar d-flex align-items-center gap-2">
 
           {% if search_query %}
             <input type="hidden" name="q" value="{{ search_query }}">
@@ -94,12 +96,13 @@
             <input type="hidden" name="categories" value="{{ cat }}">
           {% endfor %}
 
-          <label class="small text-muted mb-0">Sort by</label>
+          <label class="sort-label mb-0">Sort by</label>
 
           <select
             name="sort"
-            class="form-select form-select-sm"
+            class="form-select form-select-sm sort-select"
             onchange="this.form.submit()">
+
 
             <option value="newest"
               {% if selected_sort == "newest" %}selected{% endif %}>
