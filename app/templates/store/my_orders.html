@@ -29,7 +29,16 @@
   <div class="row justify-content-center">
     <div class="col-12 col-lg-7">
 
-      <h2 class="mb-4 fw-semibold">My Orders</h2>
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-semibold mb-0">My Orders</h2>
+
+        <button class="btn btn-outline-dark btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#orderFilterModal">
+          <i class="bi bi-funnel me-1"></i> Filter
+        </button>
+      </div>
 
       {% if orders %}
       {% for order in orders %}
@@ -37,6 +46,7 @@
       {% set total_items = order.items|length %}
       {% set cancelled_count = order.items|selectattr("status","equalto","CANCELLED")|list|length %}
 
+      <!-- ================= ORDER CARD ================= -->
       <div class="card order-card mb-4">
         <div class="card-body p-3">
 
@@ -78,7 +88,6 @@
               (safe_item_status.replace("_"," ").title(), "secondary")
           ) %}
 
-          {# ✅ SINGLE SOURCE OF TRUTH #}
           {% set can_review =
               safe_item_status == "DELIVERED"
               and item.status != "CANCELLED"
@@ -118,24 +127,22 @@
                     </span>
 
                     {% if can_review %}
-                    <button class="btn btn-sm btn-outline-primary"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#reviewForm{{ order.id }}{{ item.id }}">
-                      Write review
-                    </button>
+                      <button class="btn btn-sm btn-outline-primary"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#reviewForm{{ order.id }}{{ item.id }}">
+                        Write review
+                      </button>
 
                     {% elif safe_item_status == "DELIVERED"
-                            and item.product_id in reviewed_product_ids %}
+                          and item.product_id in reviewed_product_ids %}
 
-                    <!-- ⭐ STATIC REVIEW STARS (Myntra-style) -->
-                    <div class="star-rating static">
-                      {% for i in range(1,6) %}
-                        <i class="bi bi-star-fill star active"></i>
-                      {% endfor %}
-                    </div>
+                      <div class="star-rating static">
+                        {% for i in range(5) %}
+                          <i class="bi bi-star-fill star active"></i>
+                        {% endfor %}
+                      </div>
 
                     {% endif %}
-
                   </div>
                 </div>
               </div>
@@ -149,9 +156,7 @@
                       action="{{ url_for('main.submit_review_from_order', product_id=item.product_id) }}">
 
                   <div class="mb-2">
-                    <label class="form-label small fw-semibold mb-1">
-                      Your rating
-                    </label>
+                    <label class="form-label small fw-semibold mb-1">Your rating</label>
 
                     <div class="star-rating"
                          data-input="rating{{ order.id }}{{ item.id }}">
@@ -182,9 +187,7 @@
                   </div>
 
                   <div class="text-end">
-                    <button class="btn btn-sm btn-primary">
-                      Submit review
-                    </button>
+                    <button class="btn btn-sm btn-primary">Submit review</button>
                   </div>
 
                 </form>
@@ -208,25 +211,116 @@
   </div>
 </div>
 
-<!-- STAR CSS -->
+<!-- ================= FILTER MODAL (MYNTRA STYLE) ================= -->
+<div class="modal fade" id="orderFilterModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content filter-modal">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold">Filter Orders</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form method="GET">
+
+        <div class="modal-body">
+
+          <div class="filter-section">
+            <div class="filter-title">Status</div>
+
+            {% for s,label in [
+              ("","All"),
+              ("PLACED","Placed"),
+              ("CONFIRMED","Confirmed"),
+              ("PACKED","Packed"),
+              ("SHIPPED","On the way"),
+              ("DELIVERED","Delivered"),
+              ("CANCELLED","Cancelled")
+            ] %}
+            <label class="filter-option my-0">
+              <input type="radio"
+                     name="status"
+                     value="{{ s }}"
+                     {% if selected_status == s or (not selected_status and s == "") %}checked{% endif %}>
+              <span>{{ label }}</span>
+            </label>
+            {% endfor %}
+          </div>
+
+          <hr>
+
+          <div class="filter-section">
+            <div class="filter-title">Time</div>
+
+            <label class="filter-option">
+              <input type="radio" name="time" value=""
+                     {% if not selected_time %}checked{% endif %}>
+              <span>Anytime</span>
+            </label>
+
+            <label class="filter-option">
+              <input type="radio" name="time" value="30d"
+                     {% if selected_time == "30d" %}checked{% endif %}>
+              <span>Last 30 days</span>
+            </label>
+
+            <label class="filter-option">
+              <input type="radio" name="time" value="6m"
+                     {% if selected_time == "6m" %}checked{% endif %}>
+              <span>Last 6 months</span>
+            </label>
+
+            <label class="filter-option">
+              <input type="radio" name="time" value="1y"
+                     {% if selected_time == "1y" %}checked{% endif %}>
+              <span>Last 1 year</span>
+            </label>
+          </div>
+
+        </div>
+
+<div class="modal-footer filter-footer d-flex gap-2">
+  <a href="{{ url_for('main.orders') }}"
+     class="btn btn-outline-secondary flex-fill">
+    Clear Filters
+  </a>
+  <button type="submit"
+          class="btn btn-danger flex-fill">
+    Apply
+  </button>
+</div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STYLES ================= -->
 <style>
-.star-rating {
-  display: flex;
-  gap: 6px;
-  font-size: 1.4rem;
-  cursor: pointer;
+.filter-modal { max-width:420px;border-radius:8px }
+.filter-title { font-weight:600;margin-bottom:10px }
+.filter-option {
+  display:flex;gap:12px;align-items:center;
+  padding:8px 0;font-size:14px;cursor:pointer
 }
-.star-rating .star { color: #ddd; }
+.filter-option input { accent-color:#ff3f6c }
+.filter-footer {
+  position:sticky;bottom:0;background:#fff;
+  border-top:1px solid #eee
+}
+.star-rating { display:flex;gap:6px;font-size:1.3rem }
+.star-rating .star { color:#ddd;cursor:pointer }
 .star-rating .star.active,
-.star-rating .star.hover { color: #f5b301; }
+.star-rating .star.hover { color:#f5b301 }
 </style>
 
-<!-- STAR JS -->
+<!-- ================= STAR JS ================= -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".star-rating").forEach(box => {
     const stars = box.querySelectorAll(".star");
     const input = document.getElementById(box.dataset.input);
+    if (!input) return;
 
     stars.forEach(star => {
       star.addEventListener("mouseenter", () => {

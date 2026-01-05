@@ -41,6 +41,7 @@ def dashboard():
 # @main_bp.route("/orders")
 # @login_required
 # def orders():
+
 #     orders = (
 #         Order.query
 #         .filter_by(user_id=current_user.id)
@@ -48,25 +49,49 @@ def dashboard():
 #         .all()
 #     )
 
+#     # ✅ Products already reviewed by this user
+#     reviewed_product_ids = {
+#         r.product_id
+#         for r in ProductReview.query
+#             .filter_by(user_id=current_user.id)
+#             .all()
+#     }
 
 #     return render_template(
 #         "store/my_orders.html",
-#         orders=orders
+#         orders=orders,
+#         reviewed_product_ids=reviewed_product_ids
 #     )
 
+from datetime import datetime, timedelta
 
 @main_bp.route("/orders")
 @login_required
 def orders():
 
-    orders = (
-        Order.query
-        .filter_by(user_id=current_user.id)
-        .order_by(Order.created_at.desc())
-        .all()
-    )
+    # ================= FILTER PARAMS =================
+    status = request.args.get("status", "").strip()
+    time_range = request.args.get("time", "").strip()
 
-    # ✅ Products already reviewed by this user
+    query = Order.query.filter_by(user_id=current_user.id)
+
+    # ================= STATUS FILTER =================
+    if status:
+        query = query.filter(Order.status == status)
+
+    # ================= TIME FILTER =================
+    now = datetime.utcnow()
+
+    if time_range == "30d":
+        query = query.filter(Order.created_at >= now - timedelta(days=30))
+    elif time_range == "6m":
+        query = query.filter(Order.created_at >= now - timedelta(days=180))
+    elif time_range == "1y":
+        query = query.filter(Order.created_at >= now - timedelta(days=365))
+
+    orders = query.order_by(Order.created_at.desc()).all()
+
+    # ================= REVIEWED PRODUCTS =================
     reviewed_product_ids = {
         r.product_id
         for r in ProductReview.query
@@ -77,7 +102,9 @@ def orders():
     return render_template(
         "store/my_orders.html",
         orders=orders,
-        reviewed_product_ids=reviewed_product_ids
+        reviewed_product_ids=reviewed_product_ids,
+        selected_status=status,
+        selected_time=time_range
     )
 
 
