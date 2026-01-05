@@ -95,7 +95,7 @@
                 (safe_item_status.replace("_"," ").title(), "secondary")
             ) %}
 
-            <div class="card item-card">
+            <div class="card item-card mb-3">
               <div class="card-body p-3">
 
                 <div class="item-row">
@@ -104,7 +104,7 @@
                   <div class="product-thumb">
                     {% if item.product and item.product.primary_image %}
                       <img src="{{ url_for('static', filename=item.product.primary_image) }}"
-                           alt="{{ item.product.name }}"
+                           alt="{{ item.product_name }}"
                            loading="lazy">
                     {% else %}
                       <div class="no-image">No Image</div>
@@ -130,6 +130,7 @@
                         {{ item_label[0] }}
                       </span>
 
+                      {# ✅ REVIEW BUTTON ONLY FOR DELIVERED ITEMS #}
                       {% if safe_item_status == "DELIVERED" %}
                       <button class="btn btn-sm btn-outline-primary"
                               data-bs-toggle="collapse"
@@ -142,6 +143,7 @@
                   </div>
                 </div>
 
+                {# ✅ REVIEW FORM — UNIQUE PER ITEM #}
                 {% if safe_item_status == "DELIVERED" %}
                 <div class="collapse mt-3"
                      id="reviewForm{{ order.id }}{{ item.id }}">
@@ -177,7 +179,9 @@
                       </div>
 
                       <div class="text-end">
-                        <button class="btn btn-sm btn-primary">Submit</button>
+                        <button class="btn btn-sm btn-primary">
+                          Submit review
+                        </button>
                       </div>
                     </div>
 

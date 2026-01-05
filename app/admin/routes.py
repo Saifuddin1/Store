@@ -404,22 +404,18 @@ def order_detail(order_id):
 def update_order_status(order_id):
     order = Order.query.get_or_404(order_id)
 
-    new_status = request.form.get("status")
-    remark = request.form.get("remark")
+    action = request.form.get("status")   # workflow action OR CANCELLED
+    remark = request.form.get("remark", "").strip()
     item_ids = request.form.getlist("item_ids")
-
-    allowed = ALLOWED_STATUS_TRANSITIONS.get(order.status, [])
-
-    if new_status not in allowed:
-        flash("Invalid status transition", "danger")
-        return redirect(url_for("admin.order_detail", order_id=order.id))
 
     try:
         old_order_status = order.status
-        cancelled_items = []   # 👈 TRACK ONLY CANCELLED ITEMS
+        cancelled_items = []
 
-        # ================= ITEM LEVEL CANCELLATION =================
-        if new_status == "CANCELLED":
+        # ======================================================
+        # ITEM-LEVEL CANCELLATION (NO ORDER STATUS CHANGE)
+        # ======================================================
+        if action == "CANCELLED":
 
             if not item_ids:
                 flash("Please select at least one item to cancel", "danger")
@@ -428,7 +424,11 @@ def update_order_status(order_id):
             for item_id in item_ids:
                 item = OrderItem.query.get(item_id)
 
-                if not item or item.status in ["CANCELLED", "SHIPPED", "DELIVERED"]:
+                if (
+                    not item
+                    or item.order_id != order.id
+                    or item.status in ["CANCELLED", "SHIPPED", "DELIVERED"]
+                ):
                     continue
 
                 # Restore stock
@@ -446,19 +446,52 @@ def update_order_status(order_id):
                         old_status=old_item_status,
                         new_status="ITEM_CANCELLED",
                         changed_by=current_user.id,
-                        remark=f"{item.product_name} cancelled by admin. Reason: {remark}"
+                        remark=f"{item.product_name} cancelled. Reason: {remark}"
                     )
                 )
 
-            # 🔁 Recalculate order
-            recalc_order_status(order)   # sets PLACED / PARTIALLY_CANCELLED / CANCELLED
+            # ❗ ONLY cancel order if ALL items are cancelled
+            active_items = [
+                i for i in order.items
+                if i.status not in ["CANCELLED"]
+            ]
+
+            if not active_items:
+                order.status = "CANCELLED"
+
             recalc_order_total(order)
 
-        # ================= NORMAL ORDER STATUS CHANGE =================
+        # ======================================================
+        # WORKFLOW ACTIONS (CONFIRM → PACK → SHIP → DELIVER)
+        # ======================================================
         else:
-            order.status = new_status
+            allowed = ALLOWED_STATUS_TRANSITIONS.get(order.status, [])
+            if action not in allowed:
+                flash("Invalid status transition", "danger")
+                return redirect(url_for("admin.order_detail", order_id=order.id))
 
-        # ================= ORDER STATUS HISTORY =================
+            order.status = action
+
+            for item in order.items:
+                if item.status in ["CANCELLED", "DELIVERED"]:
+                    continue
+
+                old_item_status = item.status
+                item.status = action
+
+                db.session.add(
+                    OrderStatusHistory(
+                        order_id=order.id,
+                        old_status=old_item_status,
+                        new_status=action,
+                        changed_by=current_user.id,
+                        remark=f"{item.product_name} marked as {action}"
+                    )
+                )
+
+        # ======================================================
+        # ORDER HISTORY (ONLY IF CHANGED)
+        # ======================================================
         if old_order_status != order.status:
             db.session.add(
                 OrderStatusHistory(
@@ -472,10 +505,8 @@ def update_order_status(order_id):
 
         db.session.commit()
 
-        # ================= EMAIL NOTIFICATION =================
         if cancelled_items:
             send_order_cancellation_email(order, cancelled_items, remark)
-
 
         flash("Order updated successfully", "success")
 
@@ -484,6 +515,7 @@ def update_order_status(order_id):
         flash(str(e), "danger")
 
     return redirect(url_for("admin.order_detail", order_id=order.id))
+
 
 
 @admin_bp.route("/analytics")
