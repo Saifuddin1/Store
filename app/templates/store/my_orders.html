@@ -36,10 +36,7 @@
 
       {% set total_items = order.items|length %}
       {% set cancelled_count = order.items|selectattr("status","equalto","CANCELLED")|list|length %}
-      {% set delivered_count = order.items|selectattr("status","equalto","DELIVERED")|list|length %}
-      {% set shipped_count = order.items|selectattr("status","equalto","SHIPPED")|list|length %}
 
-      <!-- ================= ORDER CARD ================= -->
       <div class="card order-card mb-4">
         <div class="card-body p-3">
 
@@ -50,11 +47,7 @@
                 <div class="fw-semibold fs-6">Order #{{ order.id }}</div>
 
                 <span class="badge rounded-pill bg-{{ ORDER_STATUS_COLORS.get(order.status or 'PLACED') }}">
-                  {% if order.status == "PARTIALLY_CANCELLED" %}
-                    Partially Cancelled
-                  {% else %}
-                    {{ (order.status or "PLACED").replace("_"," ") }}
-                  {% endif %}
+                  {{ order.status.replace("_"," ") }}
                 </span>
 
                 {% if cancelled_count > 0 %}
@@ -77,18 +70,25 @@
 
           <hr class="my-3">
 
-          <!-- ================= ITEMS ================= -->
+          <!-- ITEMS -->
           {% for item in order.items %}
           {% set safe_item_status = item.status or "ACTIVE" %}
           {% set item_label = ITEM_STATUS_LABELS.get(
-            safe_item_status,
-            (safe_item_status.replace("_"," ").title(), "secondary")
+              safe_item_status,
+              (safe_item_status.replace("_"," ").title(), "secondary")
           ) %}
+
+          {# ✅ SINGLE SOURCE OF TRUTH #}
+          {% set can_review =
+              safe_item_status == "DELIVERED"
+              and item.status != "CANCELLED"
+              and item.product_id not in reviewed_product_ids
+          %}
 
           <div class="card item-card mb-3">
             <div class="card-body p-3">
 
-              <div class="item-row d-flex gap-3">
+              <div class="d-flex gap-3">
 
                 <!-- IMAGE -->
                 <div class="product-thumb">
@@ -102,8 +102,7 @@
                 </div>
 
                 <!-- INFO -->
-                <div class="item-info flex-grow-1">
-
+                <div class="flex-grow-1">
                   <div class="d-flex justify-content-between">
                     <div class="fw-semibold">{{ item.product_name }}</div>
                     <div class="fw-semibold">₹{{ item.subtotal }}</div>
@@ -118,26 +117,36 @@
                       {{ item_label[0] }}
                     </span>
 
-                    {% if safe_item_status == "DELIVERED" %}
+                    {% if can_review %}
                     <button class="btn btn-sm btn-outline-primary"
                             data-bs-toggle="collapse"
                             data-bs-target="#reviewForm{{ order.id }}{{ item.id }}">
                       Write review
                     </button>
-                    {% endif %}
-                  </div>
 
+                    {% elif safe_item_status == "DELIVERED"
+                            and item.product_id in reviewed_product_ids %}
+
+                    <!-- ⭐ STATIC REVIEW STARS (Myntra-style) -->
+                    <div class="star-rating static">
+                      {% for i in range(1,6) %}
+                        <i class="bi bi-star-fill star active"></i>
+                      {% endfor %}
+                    </div>
+
+                    {% endif %}
+
+                  </div>
                 </div>
               </div>
 
-              <!-- ================= REVIEW FORM ================= -->
-              {% if safe_item_status == "DELIVERED" %}
+              <!-- REVIEW FORM -->
+              {% if can_review %}
               <div class="collapse mt-3"
                    id="reviewForm{{ order.id }}{{ item.id }}">
 
                 <form method="POST"
-                      action="{{ url_for('main.submit_review_from_order', product_id=item.product_id) }}"
-                      class="review-box">
+                      action="{{ url_for('main.submit_review_from_order', product_id=item.product_id) }}">
 
                   <div class="mb-2">
                     <label class="form-label small fw-semibold mb-1">
@@ -188,19 +197,18 @@
 
         </div>
       </div>
-
       {% endfor %}
       {% else %}
-      <div class="text-center py-5">
-        <h5>No orders yet</h5>
-      </div>
+        <div class="text-center py-5">
+          <h5>No orders yet</h5>
+        </div>
       {% endif %}
 
     </div>
   </div>
 </div>
 
-<!-- ================= STAR RATING CSS ================= -->
+<!-- STAR CSS -->
 <style>
 .star-rating {
   display: flex;
@@ -208,52 +216,33 @@
   font-size: 1.4rem;
   cursor: pointer;
 }
-
-.star-rating .star {
-  color: #ddd;
-  transition: color 0.2s ease;
-}
-
+.star-rating .star { color: #ddd; }
 .star-rating .star.active,
-.star-rating .star.hover {
-  color: #f5b301;
-}
+.star-rating .star.hover { color: #f5b301; }
 </style>
 
-<!-- ================= STAR RATING JS ================= -->
+<!-- STAR JS -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
-  document.querySelectorAll(".star-rating").forEach(ratingBox => {
-
-    const stars = ratingBox.querySelectorAll(".star");
-    const input = document.getElementById(ratingBox.dataset.input);
+  document.querySelectorAll(".star-rating").forEach(box => {
+    const stars = box.querySelectorAll(".star");
+    const input = document.getElementById(box.dataset.input);
 
     stars.forEach(star => {
-
       star.addEventListener("mouseenter", () => {
-        const val = +star.dataset.value;
-        stars.forEach(s =>
-          s.classList.toggle("hover", +s.dataset.value <= val)
-        );
+        const v = +star.dataset.value;
+        stars.forEach(s => s.classList.toggle("hover", +s.dataset.value <= v));
       });
-
       star.addEventListener("mouseleave", () => {
         stars.forEach(s => s.classList.remove("hover"));
       });
-
       star.addEventListener("click", () => {
-        const val = +star.dataset.value;
-        input.value = val;
-
-        stars.forEach(s =>
-          s.classList.toggle("active", +s.dataset.value <= val)
-        );
+        const v = +star.dataset.value;
+        input.value = v;
+        stars.forEach(s => s.classList.toggle("active", +s.dataset.value <= v));
       });
-
     });
   });
-
 });
 </script>
 
